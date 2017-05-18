@@ -1,11 +1,12 @@
 #include <Arduino.h>
-
+#include <string.h>
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 //Needed for WifiManager
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <WiFiManager.h>          //https://github.com/kentaylor/WiFiManager
 #include <PubSubClient.h>
+#include <Soil.h>
 
 // Constants
 const int PIN_LED = 2;
@@ -14,9 +15,10 @@ const char* mqtt_server = "192.168.0.102";
 
 // Global Variables
 bool initialWifiConfig = false;
-int id = ESP.getChipId();
+int chipId = ESP.getChipId();
 WiFiClient wifiClient;
 PubSubClient mqtt(wifiClient);
+Soil soil(chipId, 2000, A0, D0, mqtt);
 
 // Function Prototypes
 void connectWifiIfConfigured();
@@ -43,13 +45,14 @@ void loop() {
     reconnect();
   }
   mqtt.loop();
+  soil.loop();
 }
 
 void reconnect() {
   while(!mqtt.connected()) {
     Serial.println("connecting mqtt");
     char idChr[9];
-    itoa(id, idChr, 10);
+
     if (mqtt.connect(idChr)) {
       Serial.println("connected");
     }
