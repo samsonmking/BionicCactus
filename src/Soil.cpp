@@ -1,4 +1,4 @@
-#include <Soil.h>
+#include <Soil.hpp>
 
 Soil::Soil(int chipId, int interval, int signalPin, int powerPin, PubSubClient& mqtt): _mqtt(mqtt) {
   snprintf(_topic, 30, "/soil/%i/values", chipId);
