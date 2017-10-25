@@ -1,26 +1,36 @@
 #include <Soil.hpp>
 
-Soil::Soil(int chipId, int interval, int signalPin, int powerPin, PubSubClient& mqtt): _mqtt(mqtt) {
-  snprintf(_topic, 30, "/soil/%i/values", chipId);
-  _interval = interval;
-  _signalPin = signalPin;
-  _powerPin = powerPin;
-  pinMode(powerPin, OUTPUT);
-  digitalWrite(powerPin, LOW);
+Soil::Soil(SHT1x& sht1x, Pump& pump) : _sht1x(sht1x), _pump(pump), _stats(), pumping(false) {
+
 }
 
 void Soil::loop() {
-  long now = millis();
-  if ((now - _lastMessage) < _interval) {
-    return;
+  if (pumping) {
+    _pump.runPump(100);
+    unsigned long now = millis();
+    if ((now - _startTime) > _cycleTime) {
+      pumping = false;
+      return;
+    }
   }
-  digitalWrite(_powerPin, HIGH);
-  delay(500);
-  int sensorValue = analogRead(_signalPin);
-  int sensorPercent = (sensorValue  * 100) / 1023;
-  char sensorStr[5];
-  itoa(sensorPercent, sensorStr, 10);
-  _mqtt.publish(_topic, sensorStr);
-  _lastMessage = now;
-  digitalWrite(_powerPin, LOW);
+  else {
+    _pump.runPump(0);
+    float humidity = _sht1x.readHumidity();
+    _humidityBuffer[_bi] = humidity;
+    if (_bi < (_bufferSize - 1)) {
+      _bi++;
+    }
+    else {
+      _bi = 0;
+    }
+    Serial.print("Humidity: ");
+    Serial.print(humidity);
+    Serial.println();
+    float stdDev = _stats.stdev(_humidityBuffer, _bufferSize);
+    Serial.println(stdDev);
+    if ((stdDev < 0.05) && (humidity < 85.0)) {
+      pumping = true;
+      _startTime = millis();
+     }
+   }
 }

@@ -3,18 +3,28 @@
 
 #include <PubSubClient.h>
 #include <Arduino.h>
+#include <SHT1x.h>
+#include <Pump.hpp>
+#include <QuickStats.h>
 
 class Soil {
 public:
-  Soil(int chipId, int interval, int signalPin, int powerPin, PubSubClient& mqtt);
+  Soil(SHT1x& sht1x, Pump& pump);
+  void setTimeAtWet(long seconds);
+  void setTimeAtDry(long seconds);
+  void setDispersionTime(long seconds);
   void loop();
 private:
-  char _topic[30];
-  int _signalPin;
-  int _powerPin;
-  int _interval;
-  long _lastMessage = 0;
-  PubSubClient& _mqtt;
+  SHT1x _sht1x;
+  Pump _pump;
+  QuickStats _stats;
+  static const int _bufferSize = 10;
+  float _humidityBuffer[_bufferSize];
+  int _bi = 0;
+  unsigned long _cycleTime = 500;
+  unsigned long _startTime = 0;
+  float _setPoint = 95;
+  bool pumping;
 };
 
 #endif
