@@ -5,6 +5,8 @@
 #include <MockTimeProvider.hpp>
 #include <Clock.hpp>
 #include <Light.hpp>
+#include <MockSoilProvider.hpp>
+#include <Soil.hpp>
 
 // Clock Tests
 void test_mock_provider() {
@@ -100,6 +102,21 @@ void test_light_off_after_settime() {
   TEST_ASSERT_EQUAL(0, alight.getLastOutput());
 }
 
+// Soil Tests
+void test_soil_is_stable() {
+  MockSoilProvider mockSoilProvider;
+  Soil asoil(&mockSoilProvider);
+  float readings [10] = {95.1, 95.2, 95.3, 95.2, 95.1, 95.9, 94.8, 95.3, 96.0, 95};
+  TEST_ASSERT_TRUE(asoil.isStable(readings));
+}
+
+void test_soil_is_not_stable() {
+  MockSoilProvider mockSoilProvider;
+  Soil asoil(&mockSoilProvider);
+  float readings [10] = {1.08, 0.99, 0.91, 0.9, 41.59, 57.65, 62.38, 66.34, 68.94, 71.73};
+  TEST_ASSERT_FALSE(asoil.isStable(readings));
+}
+
 void setup() {
     delay(2000);
 
@@ -117,6 +134,10 @@ void setup() {
     RUN_TEST(test_light_on_after_settime);
     RUN_TEST(test_light_on_after_settime_half_bright);
     RUN_TEST(test_light_off_after_settime);
+
+    // Soil Tests
+    RUN_TEST(test_soil_is_stable);
+    RUN_TEST(test_soil_is_not_stable);
 
     UNITY_END();
 }
