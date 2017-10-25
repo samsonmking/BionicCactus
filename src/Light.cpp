@@ -1,10 +1,8 @@
 #include <Light.hpp>
 
-Light::Light(int lightPin) {
-  _lightPin = lightPin;
-  _clock = Clock::getInstance();
-  pinMode(_lightPin, OUTPUT);
-  digitalWrite(_lightPin, LOW);
+Light::Light(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin) {
+  _lastOutput = 0;
+  analogWrite(_lightPin, _lastOutput);
 }
 
 void Light::setTimeOn(const char* timeOn)
@@ -26,12 +24,14 @@ const char* Light::getTimeOff() {
 }
 
 void Light::loop() {
-  bool pastOnTime = _clock->isATOrPastTime(_timeOn);
-  bool pastOffTime = _clock->isATOrPastTime(_timeOff);
+  bool pastOnTime = _clock.isAtOrPastTime(_timeOn);
+  bool pastOffTime = _clock.isAtOrPastTime(_timeOff);
   if (pastOnTime && !pastOffTime) {
-    digitalWrite(_lightPin, HIGH);
+    _lastOutput = (_brightness * PWMRANGE) / 100;
+    analogWrite(_lightPin, _lastOutput);
   }
   else {
-    digitalWrite(_lightPin, LOW);
+    _lastOutput = 0;
+    analogWrite(_lightPin, _lastOutput);
   }
 }

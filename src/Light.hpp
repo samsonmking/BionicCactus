@@ -6,15 +6,23 @@
 
 class Light {
 public:
-  Light(int lightPin);
+  Light(Clock& clock, int lightPin);
   void setTimeOn(const char* timeOn);
   void setTimeOff(const char* timeOff);
+  void setBrightness(int brightness) {
+    _brightness = brightness;
+  }
   void loop();
   const char* getTimeOn();
   const char* getTimeOff();
+  int getLastOutput() {
+    return _lastOutput;
+  }
 private:
   int _lightPin;
-  Clock* _clock;
+  int _brightness = 100;
+  int _lastOutput = 0;
+  Clock _clock;
   char _timeOn[9];
   char _timeOff[9];
 };
