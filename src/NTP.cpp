@@ -13,9 +13,9 @@ NTP* NTP::getInstance() {
 }
 
 time_t NTP::getCurrentTime() {
-  if (!s_ntp) {
-    getInstance();
+  if (!_started) {
     s_ntp->begin();
+    _started = true;
   }
   return now();
 }
@@ -33,18 +33,13 @@ time_t NTP::s_getNTPTime() {
 time_t NTP::getNTPTime() {
   IPAddress ntpServerIP; // NTP server's ip address
     while (_udp.parsePacket() > 0) ; // discard any previously received packets
-    Serial.println("Transmit NTP Request");
     // get a random server from the pool
     WiFi.hostByName(_ntpServerName, ntpServerIP);
-    Serial.print(_ntpServerName);
-    Serial.print(": ");
-    Serial.println(ntpServerIP);
     sendNTPpacket(ntpServerIP);
     uint32_t beginWait = millis();
     while (millis() - beginWait < 1500) {
       int size = _udp.parsePacket();
       if (size >= NTP_PACKET_SIZE) {
-        Serial.println("Receive NTP Response");
         _udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
         unsigned long secsSince1900;
         // convert four bytes starting at location 40 to a long integer

@@ -22,6 +22,7 @@ private:
   byte packetBuffer[48];
   WiFiUDP _udp;
   void sendNTPpacket(IPAddress &address);
+  bool _started = false;
 };
 
 #endif
