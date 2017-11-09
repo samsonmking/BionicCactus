@@ -9,6 +9,9 @@
 class Clock {
 public:
   Clock(TimeProvider* timeProvider, int timeZone);
+  unsigned long getMillis() {
+    return _timeProvider->getMillis();
+  };
   int timeZone;
   bool isAtOrPastTime(const char* timeChr);
   time_t getTimeFromChr(char* input);

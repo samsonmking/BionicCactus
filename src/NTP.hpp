@@ -11,6 +11,7 @@ public:
   static NTP* getInstance();
   virtual time_t getCurrentTime();
   time_t getNTPTime();
+  virtual unsigned long getMillis();
 private:
   NTP();
   void begin();

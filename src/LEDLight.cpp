@@ -1,29 +1,29 @@
-#include <Light.hpp>
+#include <LEDLight.hpp>
 
-Light::Light(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin) {
+LEDLight::LEDLight(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin) {
   _lastOutput = 0;
   analogWrite(_lightPin, _lastOutput);
 }
 
-void Light::setTimeOn(const char* timeOn)
+void LEDLight::setTimeOn(const char* timeOn)
 {
   strcpy(_timeOn, timeOn);
 }
 
-void Light::setTimeOff(const char* timeOff)
+void LEDLight::setTimeOff(const char* timeOff)
 {
   strcpy(_timeOff, timeOff);
 }
 
-const char* Light::getTimeOn() {
+const char* LEDLight::getTimeOn() {
   return _timeOn;
 }
 
-const char* Light::getTimeOff() {
+const char* LEDLight::getTimeOff() {
   return _timeOff;
 }
 
-void Light::loop() {
+void LEDLight::loop() {
   bool pastOnTime = _clock.isAtOrPastTime(_timeOn);
   bool pastOffTime = _clock.isAtOrPastTime(_timeOff);
   if (pastOnTime && !pastOffTime) {

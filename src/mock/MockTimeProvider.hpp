@@ -13,6 +13,10 @@ public:
     return currentTime;
   }
   time_t currentTime;
+  unsigned long millis;
+  virtual unsigned long getMillis() {
+    return millis;
+  }
 };
 
 #endif

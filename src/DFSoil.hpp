@@ -1,12 +1,13 @@
 #ifndef DFSOIL_H
 #define DFSOIL_H
 
+#include <SoilSensor.hpp>
 #include <Arduino.h>
 #include <Light.hpp>
 
-class DFSoil {
+class DFSoil : public SoilSensor {
 public:
-  DFSoil(int pin, Light& light, int high = 419, int low = 770, int darknessOffset = 59);
+  DFSoil(int pin, Light* light, int high = 419, int low = 770, int darknessOffset = 59);
   void setHigh(int high) {
     _high = high;
     calculateConstants();
@@ -19,11 +20,11 @@ public:
     _darknessOffset = offset;
   };
   int readRaw();
-  int readPercent();
+  virtual int readPercent();
   int calculatePercent(int raw);
 private:
   void calculateConstants();
-  Light _light;
+  Light* _light;
   int _pin;
   int _high;
   int _low;

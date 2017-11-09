@@ -2,11 +2,14 @@
 
 #include <Arduino.h>
 #include <unity.h>
-#include <MockTimeProvider.hpp>
+#include <mock/MockTimeProvider.hpp>
 #include <Clock.hpp>
-#include <Light.hpp>
-#include <MockSoilProvider.hpp>
-#include <Soil.hpp>
+#include <LEDLight.hpp>
+#include <mock/MockLight.hpp>
+#include <DFSoil.hpp>
+#include <mock/MockSoilSensor.hpp>
+#include <mock/MockPump.hpp>
+#include <SoilRunLoop.hpp>
 
 // Clock Tests
 void test_mock_provider() {
@@ -70,7 +73,7 @@ void test_light_on_after_settime() {
   time_t testTime = 1508936400;
   MockTime mocktime(testTime);
   Clock aclock(&mocktime, 0);
-  Light alight(aclock, D5);
+  LEDLight alight(aclock, D5);
   alight.setTimeOn("09:00:00");
   alight.setTimeOff("14:00:00");
   alight.loop();
@@ -82,7 +85,7 @@ void test_light_on_after_settime_half_bright() {
   time_t testTime = 1508936400;
   MockTime mocktime(testTime);
   Clock aclock(&mocktime, 0);
-  Light alight(aclock, D5);
+  LEDLight alight(aclock, D5);
   alight.setTimeOn("09:00:00");
   alight.setTimeOff("14:00:00");
   alight.setBrightness(50);
@@ -95,26 +98,81 @@ void test_light_off_after_settime() {
   time_t testTime = 1508936400;
   MockTime mocktime(testTime);
   Clock aclock(&mocktime, 0);
-  Light alight(aclock, D5);
+  LEDLight alight(aclock, D5);
   alight.setTimeOn("09:00:00");
   alight.setTimeOff("11:00:00");
   alight.loop();
   TEST_ASSERT_EQUAL(0, alight.getLastOutput());
 }
 
-// Soil Tests
-void test_soil_is_stable() {
-  MockSoilProvider mockSoilProvider;
-  Soil asoil(&mockSoilProvider);
-  float readings [10] = {95.1, 95.2, 95.3, 95.2, 95.1, 95.9, 94.8, 95.3, 96.0, 95};
-  TEST_ASSERT_TRUE(asoil.isStable(readings));
+// DFSoil Tests
+void test_calculate_percent() {
+  MockLight light;
+  DFSoil dfsoil(A0, &light);
+  dfsoil.setLow(770);
+  dfsoil.setHigh(419);
+  int percent = dfsoil.calculatePercent(500);
+  TEST_ASSERT_EQUAL(76, percent);
 }
 
-void test_soil_is_not_stable() {
-  MockSoilProvider mockSoilProvider;
-  Soil asoil(&mockSoilProvider);
-  float readings [10] = {1.08, 0.99, 0.91, 0.9, 41.59, 57.65, 62.38, 66.34, 68.94, 71.73};
-  TEST_ASSERT_FALSE(asoil.isStable(readings));
+// SoilRunLoop Tests
+void test_starting_state_check_moisture() {
+  //10/25/2017 1:00:00 PM GMT
+  time_t testTime = 1508936400;
+  MockTime mocktime(testTime);
+  Clock aclock(&mocktime, 0);
+  MockPump pump;
+  MockSoilSensor sensor;
+  SoilRunLoop runLoop(&pump, &sensor, aclock);
+  TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
+}
+
+void test_pump_vol() {
+  //10/25/2017 1:00:00 PM GMT
+  time_t testTime = 1508936400;
+  MockTime mocktime(testTime);
+  mocktime.millis = 0;
+  Clock aclock(&mocktime, 0);
+  MockPump pump;
+  MockSoilSensor sensor;
+  sensor.percent = 50;
+  SoilRunLoop runLoop(&pump, &sensor, aclock);
+  runLoop.setmlPerPercent(1);
+  runLoop.setSetPoint(80);
+  runLoop.loop();
+
+  TEST_ASSERT_EQUAL(SoilRunLoop::Pumping, runLoop.getState());
+  TEST_ASSERT_EQUAL(30, pump.lastVol);
+}
+
+void test_full_cycle() {
+  //10/25/2017 1:00:00 PM GMT
+  time_t testTime = 1508936400;
+  MockTime mocktime(testTime);
+  mocktime.millis = 0;
+  Clock aclock(&mocktime, 0);
+  MockPump pump;
+  MockSoilSensor sensor;
+  sensor.percent = 50;
+  SoilRunLoop runLoop(&pump, &sensor, aclock);
+  runLoop.setmlPerPercent(1);
+  runLoop.setSetPoint(80);
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::Pumping, runLoop.getState());
+  TEST_ASSERT_EQUAL(30, pump.lastVol);
+  pump.dispenseIsDone = true;
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::Dispersing, runLoop.getState());
+  mocktime.millis = 600005;
+  sensor.percent = 80;
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
+  mocktime.millis = 43200000;
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::Drying, runLoop.getState());
+  mocktime.millis = 86400001;
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
 }
 
 void setup() {
@@ -135,9 +193,12 @@ void setup() {
     RUN_TEST(test_light_on_after_settime_half_bright);
     RUN_TEST(test_light_off_after_settime);
 
-    // Soil Tests
-    RUN_TEST(test_soil_is_stable);
-    RUN_TEST(test_soil_is_not_stable);
+    // DFSoil Tests
+    RUN_TEST(test_calculate_percent);
+
+    // SoilRunLoop Tests
+    RUN_TEST(test_pump_vol);
+    RUN_TEST(test_full_cycle);
 
     UNITY_END();
 }

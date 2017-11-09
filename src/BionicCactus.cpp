@@ -1,3 +1,5 @@
+#ifndef UNIT_TEST
+
 #include <Arduino.h>
 #include <string.h>
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
@@ -6,46 +8,86 @@
 #include <DNSServer.h>
 #include <WiFiManager.h>          //https://github.com/kentaylor/WiFiManager
 #include <PubSubClient.h>
-#include <Soil.h>
+#include <Clock.hpp>
+#include <NTP.hpp>
+#include <LEDLight.hpp>
+#include <PeriPump.hpp>
+#include <DFSoil.hpp>
+#include <SoilRunLoop.hpp>
 
 // Constants
 const int PIN_LED = 2;
-const int WIFI_TRIGGER_PIN = 0;
+const int WIFI_TRIGGER_PIN = D3;
 const char* mqtt_server = "192.168.0.102";
+enum States { Looping, Priming };
 
 // Global Variables
+States state = Looping;
 bool initialWifiConfig = false;
 int chipId = ESP.getChipId();
+unsigned long logStart;
+unsigned long logTime = 1000;
+
 WiFiClient wifiClient;
 PubSubClient mqtt(wifiClient);
-Soil soil(chipId, 2000, A0, D0, mqtt);
+
+NTP* ntp = NTP::getInstance();
+Clock clock(ntp, -5);
+PeriPump pump(clock, D7, D6, D8);
+LEDLight ledLight(clock, D1);
+DFSoil dfSoil(A0, &ledLight);
+SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
 
 // Function Prototypes
 void connectWifiIfConfigured();
 void configureWifi();
 void onSubscribed(char* topic, byte* payload, unsigned int length);
 void reconnect();
+void logVals();
 
 void setup() {
   pinMode(PIN_LED, OUTPUT);
   pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
   connectWifiIfConfigured();
-  Serial.println();
-  mqtt.setServer(mqtt_server, 1883);
-  mqtt.setCallback(onSubscribed);
+  // mqtt.setServer(mqtt_server, 1883);
+  // mqtt.setCallback(onSubscribed);
+  ledLight.setTimeOn("09:00:00");
+  ledLight.setTimeOff("17:00:00");
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if ((digitalRead(WIFI_TRIGGER_PIN) == LOW) || (initialWifiConfig)) {
-    configureWifi();
+  // if (WiFi.status()!=WL_CONNECTED) {
+  //   connectWifiIfConfigured();
+  // }
+  switch (state) {
+    case Looping:
+      if (digitalRead(WIFI_TRIGGER_PIN) == LOW) {
+        state = Priming;
+        return;
+      }
+      ledLight.loop();
+      soilRunLoop.loop();
+      logVals();
+      break;
+    case Priming:
+      pump.prime();
+      if (digitalRead(WIFI_TRIGGER_PIN) == HIGH) {
+        pump.stop();
+        state = Looping;
+      }
+      break;
   }
-  if (!mqtt.connected()) {
-    reconnect();
+}
+
+void logVals() {
+  unsigned long now = clock.getMillis();
+  if ((now - logStart) < logTime) {
+    return;
   }
-  mqtt.loop();
-  soil.loop();
+  Serial.println(dfSoil.readPercent());
+  logStart = now;
 }
 
 void reconnect() {
@@ -88,3 +130,5 @@ void configureWifi() {
   ESP.reset();
   delay(5000);
 }
+
+#endif

@@ -1,6 +1,6 @@
 #include <DFSoil.hpp>
 
-DFSoil::DFSoil(int pin, Light& light, int high, int low, int darknessOffset) :
+DFSoil::DFSoil(int pin, Light* light, int high, int low, int darknessOffset) :
 _pin(pin), _light(light), _high(high), _low(low), _darknessOffset(darknessOffset) {
   calculateConstants();
 }
@@ -11,7 +11,7 @@ int DFSoil::readRaw() {
 
 int DFSoil::readPercent() {
   int raw = readRaw();
-  if (_light.getLastOutput() == 0) {
+  if (!_light->isOn()) {
     raw += _darknessOffset;
   }
   return calculatePercent(raw);

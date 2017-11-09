@@ -20,6 +20,10 @@ time_t NTP::getCurrentTime() {
   return now();
 }
 
+unsigned long NTP::getMillis() {
+  return millis();
+}
+
 void NTP::begin() {
   _udp.begin(_port);
   setSyncProvider(s_getNTPTime);
