@@ -32,7 +32,7 @@ private:
   int _pinOut2;
   int _pinPWM;
   int _speed = 100;
-  float _flowRate = 0.9;
+  float _flowRate = 1.2;
   unsigned long _startTime;
   unsigned long _stopTime;
 };

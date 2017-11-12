@@ -29,7 +29,7 @@ void PeriPump::stop() {
 
 void PeriPump::setVolume(int vol) {
   _startTime = _clock.getMillis();
-  int secs = vol / ((_flowRate * 100) / _speed);
+  int secs = (((vol / _flowRate) * _speed) / 100);
   _stopTime = (1000 * (unsigned long)secs) + _startTime;
 }
 
