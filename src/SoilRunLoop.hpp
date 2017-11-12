@@ -9,7 +9,7 @@
 class SoilRunLoop {
 public:
   SoilRunLoop(Pump* pump, SoilSensor* sensor, Clock& clock);
-  enum States { Pumping, CheckMoisture, Drying, Dispersing };
+  enum States { Dispersing, Pumping, CheckMoisture, Drying };
   States getState() {
     return _state;
   }
@@ -36,11 +36,11 @@ public:
   }
   void loop();
 private:
-  States _state = CheckMoisture;
+  States _state;
   Pump* _pump;
   SoilSensor* _sensor;
   Clock _clock;
-  int _setPoint = 85;
+  int _setPoint = 90;
   int _tolerance = 2;
   int _maxDispense = 100;
   float _mlPerPercent = 2;

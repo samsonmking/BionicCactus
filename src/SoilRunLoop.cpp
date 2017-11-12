@@ -1,8 +1,7 @@
 #include <SoilRunLoop.hpp>
 
-SoilRunLoop::SoilRunLoop(Pump* pump, SoilSensor* sensor, Clock& clock) : _pump(pump), _sensor(sensor), _clock(clock) {
-  _state = CheckMoisture;
-  _moistureStarted = _clock.getMillis();
+SoilRunLoop::SoilRunLoop(Pump* pump, SoilSensor* sensor, Clock& clock) : _pump(pump), _sensor(sensor), _clock(clock), _state(Dispersing) {
+  _disperseStarted = _clock.getMillis();
 }
 
 void SoilRunLoop::loop() {
@@ -32,7 +31,7 @@ void SoilRunLoop::checkMoisture() {
   int current = _sensor->readPercent();
   int diff = _setPoint - current;
   if (diff > _tolerance) {
-    float vol = _mlPerPercent * diff;
+    int vol = _mlPerPercent * diff;
     if (vol > _maxDispense) {
       vol = _maxDispense;
     }
