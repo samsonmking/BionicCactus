@@ -40,11 +40,12 @@ private:
   Pump* _pump;
   SoilSensor* _sensor;
   Clock _clock;
-  int _setPoint = 90;
+  int _setPoint = 85;
   int _tolerance = 2;
-  int _maxDispense = 100;
+  int _maxDispense = 50;
   float _mlPerPercent = 2;
-  unsigned long _disperseTime = 600000;
+  //unsigned long _disperseTime = 600000;
+  unsigned long _disperseTime = 200000;
   unsigned long _disperseStarted;
   unsigned long _timeAtMoisture = 43200000;
   unsigned long _moistureStarted;

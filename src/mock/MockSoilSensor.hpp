@@ -5,8 +5,12 @@
 
 class MockSoilSensor : public SoilSensor {
 public:
-  int percent = 0;
-  virtual int readPercent() {
+  MockSoilSensor(int p) : percent(p)
+  {
+
+  };
+  int percent;
+  virtual int getPercent() {
     return percent;
   };
 };

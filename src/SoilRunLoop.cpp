@@ -28,13 +28,14 @@ void SoilRunLoop::checkMoisture() {
     _state = Drying;
     return;
   }
-  int current = _sensor->readPercent();
+  int current = _sensor->getPercent();
   int diff = _setPoint - current;
   if (diff > _tolerance) {
     int vol = _mlPerPercent * diff;
     if (vol > _maxDispense) {
       vol = _maxDispense;
     }
+    Serial.println(vol);
     _pump->setVolume(vol);
     _state = Pumping;
   }
@@ -45,6 +46,7 @@ void SoilRunLoop::pumping() {
   if (_pump->dispenseDone()) {
     _disperseStarted = _clock.getMillis();
     _state = Dispersing;
+    Serial.println("pump done");
   }
 }
 

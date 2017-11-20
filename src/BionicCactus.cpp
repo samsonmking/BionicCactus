@@ -12,13 +12,14 @@
 #include <NTP.hpp>
 #include <LEDLight.hpp>
 #include <PeriPump.hpp>
+#include <mock/MockSoilSensor.hpp>
 #include <DFSoil.hpp>
 #include <SoilRunLoop.hpp>
 
 // Constants
 const int PIN_LED = 2;
 const int WIFI_TRIGGER_PIN = D3;
-const char* mqtt_server = "192.168.0.102";
+const char* mqtt_server = "192.168.1.100";
 enum States { Looping, Priming };
 
 // Global Variables
@@ -35,14 +36,15 @@ NTP* ntp = NTP::getInstance();
 Clock clock(ntp, -5);
 PeriPump pump(clock, D7, D6, D8);
 LEDLight ledLight(clock, D1);
-DFSoil dfSoil(A0, &ledLight);
+DFSoil dfSoil(A0);
+//MockSoilSensor dfSoil(85);
 SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
 
 // Function Prototypes
 void connectWifiIfConfigured();
 void configureWifi();
 void onSubscribed(char* topic, byte* payload, unsigned int length);
-void reconnect();
+void connectMqtt();
 void logVals();
 
 void setup() {
@@ -50,24 +52,27 @@ void setup() {
   pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
   connectWifiIfConfigured();
-  // mqtt.setServer(mqtt_server, 1883);
-  // mqtt.setCallback(onSubscribed);
-  ledLight.setTimeOn("09:00:00");
+  mqtt.setServer(mqtt_server, 1883);
+  mqtt.setCallback(onSubscribed);
+  ledLight.setTimeOn("9:00:00");
   ledLight.setTimeOff("17:00:00");
+
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // if (WiFi.status()!=WL_CONNECTED) {
-  //   connectWifiIfConfigured();
-  // }
   switch (state) {
     case Looping:
       if (digitalRead(WIFI_TRIGGER_PIN) == LOW) {
         state = Priming;
         return;
       }
+      if (WiFi.status()!=WL_CONNECTED) {
+        connectWifiIfConfigured();
+      }
+      connectMqtt();
       ledLight.loop();
+      dfSoil.loop();
       soilRunLoop.loop();
       logVals();
       break;
@@ -86,11 +91,15 @@ void logVals() {
   if ((now - logStart) < logTime) {
     return;
   }
-  Serial.println(dfSoil.readPercent());
+  float hum = dfSoil.readPercent();
+  char humStr[5];
+  dtostrf(hum,3,0, humStr);
+  mqtt.publish("Soil", humStr);
+  Serial.println(humStr);
   logStart = now;
 }
 
-void reconnect() {
+void connectMqtt() {
   while(!mqtt.connected()) {
     Serial.println("connecting mqtt");
     char idChr[9];

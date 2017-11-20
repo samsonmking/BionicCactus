@@ -3,7 +3,7 @@
 
 class SoilSensor {
 public:
-  virtual int readPercent() = 0;
+  virtual int getPercent() = 0;
 };
 
 #endif
