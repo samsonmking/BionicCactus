@@ -67,14 +67,13 @@ void loop() {
         state = Priming;
         return;
       }
-      if (WiFi.status()!=WL_CONNECTED) {
-        connectWifiIfConfigured();
-      }
-      connectMqtt();
+      connectWifiIfConfigured();
       ledLight.loop();
       dfSoil.loop();
       soilRunLoop.loop();
+      connectMqtt();
       logVals();
+      mqtt.loop();      
       break;
     case Priming:
       pump.prime();
@@ -102,10 +101,14 @@ void logVals() {
 void connectMqtt() {
   while(!mqtt.connected()) {
     Serial.println("connecting mqtt");
-    char idChr[9];
+    String clientId = "ESP8266Client-";
+    clientId += String(random(0xffff), HEX);
 
-    if (mqtt.connect(idChr)) {
-      Serial.println("connected");
+    if (!mqtt.connect(clientId.c_str())) {
+      Serial.print("failed, rc=");
+      Serial.print(mqtt.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
     }
   }
 }
@@ -115,6 +118,9 @@ void onSubscribed(char* topic, byte* payload, unsigned int length) {
 }
 
 void connectWifiIfConfigured() {
+  if (WiFi.status() == WL_CONNECTED) {
+    return;
+  }
   if (WiFi.SSID() == "")
   {
     initialWifiConfig = true;
