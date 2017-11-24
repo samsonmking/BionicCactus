@@ -7,7 +7,7 @@
 
 class DFSoil : public SoilSensor {
 public:
-  DFSoil(int pin, int high = 419, int low = 715);
+  DFSoil(int pin, int high = 355, int low = 709);
   void loop();
   int getPercent();
   void setHigh(int high) {

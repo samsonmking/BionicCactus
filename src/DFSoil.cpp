@@ -1,7 +1,7 @@
 #include <DFSoil.hpp>
 
 DFSoil::DFSoil(int pin, int high, int low) :
-_pin(pin), _high(high), _low(low), _samples(10) {
+_pin(pin), _high(high), _low(low), _samples(11) {
   calculateConstants();
 }
 
