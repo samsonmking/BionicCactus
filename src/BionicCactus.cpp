@@ -15,6 +15,7 @@
 #include <mock/MockSoilSensor.hpp>
 #include <DFSoil.hpp>
 #include <SoilRunLoop.hpp>
+#include <ArduinoJson.h>
 
 // Constants
 const int PIN_LED = 2;
@@ -25,7 +26,9 @@ enum States { Looping, Priming };
 // Global Variables
 States state = Looping;
 bool initialWifiConfig = false;
+uint32 devIdNum = ESP.getChipId();
 char devId[25];
+char humTopic[50];
 unsigned long logStart;
 unsigned long logTime = 1000;
 
@@ -48,7 +51,8 @@ void connectMqtt();
 void logVals();
 
 void setup() {
-  snprintf(devId, 24, "%u", ESP.getChipId());
+  snprintf(devId, 24, "%u", devIdNum);
+  snprintf(humTopic, 49, "/%u/DFSoil", devIdNum);
   pinMode(PIN_LED, OUTPUT);
   pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
@@ -91,12 +95,14 @@ void logVals() {
   if ((now - logStart) < logTime) {
     return;
   }
-  
-  float hum = dfSoil.readPercent();
-  char humStr[5];
-  dtostrf(hum,3,0, humStr);
-  mqtt.publish("Soil", humStr);
-  Serial.println(humStr);
+  StaticJsonBuffer<200> humBuffer;
+  JsonObject& humRoot = humBuffer.createObject();
+  humRoot["deviceID"] = devIdNum;
+  humRoot["value"] = dfSoil.readPercent();
+  humRoot["time"] = clock.getCurrentTime();
+  char payload[500];
+  humRoot.printTo(payload, 500);
+  mqtt.publish(humTopic, payload);
   logStart = now;
 }
 
