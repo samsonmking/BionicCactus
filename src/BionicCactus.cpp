@@ -25,7 +25,7 @@ enum States { Looping, Priming };
 // Global Variables
 States state = Looping;
 bool initialWifiConfig = false;
-int chipId = ESP.getChipId();
+char devId[25];
 unsigned long logStart;
 unsigned long logTime = 1000;
 
@@ -48,6 +48,7 @@ void connectMqtt();
 void logVals();
 
 void setup() {
+  snprintf(devId, 24, "%u", ESP.getChipId());
   pinMode(PIN_LED, OUTPUT);
   pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
@@ -56,7 +57,7 @@ void setup() {
   mqtt.setCallback(onSubscribed);
   ledLight.setTimeOn("9:00:00");
   ledLight.setTimeOff("17:00:00");
-
+  Serial.println(devId);
 }
 
 void loop() {
@@ -90,6 +91,7 @@ void logVals() {
   if ((now - logStart) < logTime) {
     return;
   }
+  
   float hum = dfSoil.readPercent();
   char humStr[5];
   dtostrf(hum,3,0, humStr);
@@ -101,10 +103,7 @@ void logVals() {
 void connectMqtt() {
   while(!mqtt.connected()) {
     Serial.println("connecting mqtt");
-    String clientId = "ESP8266Client-";
-    clientId += String(random(0xffff), HEX);
-
-    if (!mqtt.connect(clientId.c_str())) {
+    if (!mqtt.connect(devId)) {
       Serial.print("failed, rc=");
       Serial.print(mqtt.state());
       Serial.println(" try again in 5 seconds");
