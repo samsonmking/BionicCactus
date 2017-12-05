@@ -41,7 +41,7 @@ private:
   SoilSensor* _sensor;
   Clock _clock;
   int _setPoint = 85;
-  int _tolerance = 2;
+  int _tolerance = 1;
   int _maxDispense = 50;
   float _mlPerPercent = 2;
   //unsigned long _disperseTime = 600000;

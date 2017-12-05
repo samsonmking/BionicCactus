@@ -72,10 +72,10 @@ void loop() {
         state = Priming;
         return;
       }
-      connectWifiIfConfigured();
       ledLight.loop();
       dfSoil.loop();
       soilRunLoop.loop();
+      connectWifiIfConfigured();
       connectMqtt();
       logVals();
       mqtt.loop();      
@@ -91,6 +91,8 @@ void loop() {
 }
 
 void logVals() {
+  if (!mqtt.connected()) return;
+  if (WiFi.status() != WL_CONNECTED) return;
   unsigned long now = clock.getMillis();
   if ((now - logStart) < logTime) {
     return;
@@ -107,7 +109,7 @@ void logVals() {
 }
 
 void connectMqtt() {
-  while(!mqtt.connected()) {
+  if(!mqtt.connected()) {
     Serial.println("connecting mqtt");
     if (!mqtt.connect(devId)) {
       Serial.print("failed, rc=");
