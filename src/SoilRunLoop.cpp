@@ -42,7 +42,6 @@ void SoilRunLoop::checkMoisture() {
 }
 
 void SoilRunLoop::pumping() {
-  _pump->loop();
   if (_pump->dispenseDone()) {
     _disperseStarted = _clock.getMillis();
     _state = Dispersing;

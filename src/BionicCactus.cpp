@@ -74,6 +74,7 @@ void loop() {
       }
       ledLight.loop();
       dfSoil.loop();
+      pump.loop();
       soilRunLoop.loop();
       connectWifiIfConfigured();
       connectMqtt();

@@ -1,7 +1,7 @@
 #include <PeriPump.hpp>
 
 PeriPump::PeriPump(Clock& clock, int pinOut1, int pinOut2, int pinPWM) :
-_clock(clock), _pinOut1(pinOut1), _pinOut2(pinOut2), _pinPWM(pinPWM) {
+_clock(clock), _pinOut1(pinOut1), _pinOut2(pinOut2), _pinPWM(pinPWM), _stopTime(0) {
   pinMode(_pinOut1, OUTPUT);
   pinMode(_pinOut2, OUTPUT);
   stop();
