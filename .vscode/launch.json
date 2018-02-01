@@ -4,11 +4,12 @@
         {
             "type": "gdb",
             "request": "launch",
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceFolder}",
             "name": "PlatformIO Debugger",
             "target": "/home/midnightspecial/Development/BionicCactusESP8266/.pioenvs/d1_mini/firmware.elf",
             "gdbpath": "/home/midnightspecial/.platformio/penv/bin/piodebuggdb",
-            "autorun": [ "source .pioinit" ]
+            "autorun": [ "source .pioinit" ],
+            "preLaunchTask": "PlatformIO: Pre-Debug"
         }
     ]
 }

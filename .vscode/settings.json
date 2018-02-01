@@ -1,5 +1,9 @@
 {
     "terminal.integrated.env.linux": {
-        "PATH": "/home/midnightspecial/.platformio/penv/bin:/home/midnightspecial/bin:/home/midnightspecial/.local/bin:/home/midnightspecial/bin:/home/midnightspecial/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+        "PATH": "/home/midnightspecial/.platformio/penv/bin:/home/midnightspecial/.platformio/penv:/home/midnightspecial/bin:/home/midnightspecial/.local/bin:/home/midnightspecial/bin:/home/midnightspecial/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    },
+    "files.associations": {
+        "cstdio": "cpp"
     }
 }
