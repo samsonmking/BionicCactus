@@ -1,8 +1,12 @@
 #include <LEDLight.hpp>
 
-LEDLight::LEDLight(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin) {
+LEDLight::LEDLight(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin), _brightness(100) {
   _lastOutput = 0;
   analogWrite(_lightPin, _lastOutput);
+}
+
+int LEDLight::getBrightness() {
+  return _brightness;
 }
 
 void LEDLight::setTimeOn(const char* timeOn)
