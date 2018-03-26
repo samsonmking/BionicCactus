@@ -6,21 +6,27 @@
 #include <web/ConfigPageGetRequestHandler.hpp>
 #include <web/SettingsFormTemplate.hpp>
 #include <web/LightFormTemplate.hpp>
+#include <web/PostRequestHandler.hpp>
+#include <web/LightPostRequestHandler.hpp>
 
 #include <Light.hpp>
 
 class BCWebServer {
 public:
-    BCWebServer(Light *light);
+    BCWebServer(ESP8266WebServer *ws, 
+        PostRequestHandler *lightPostRequest,
+        GetRequestHandler *lightGetRequest);
     void setupServer();
     void loop();
 private:
     char _buffer[5000];
+    PostParameter _postParams[10];
     ESP8266WebServer *_ws;
-    Light *_light;
-    SettingsFormTemplate *_lightSettingsForm;
+    PostRequestHandler *_postLightConfig;
     GetRequestHandler *_getLightConfig;
-    
+    void handleGet(GetRequestHandler *request);
+    void handlePost(PostRequestHandler *request);
+    void redirect(const char *uri);
 };
 
 #endif
