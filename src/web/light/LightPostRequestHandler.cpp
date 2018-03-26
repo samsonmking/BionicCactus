@@ -1,4 +1,4 @@
-#include <web/LightPostRequestHandler.hpp>
+#include <web/light/LightPostRequestHandler.hpp>
 
 LightPostRequestHandler::LightPostRequestHandler(const char *uri, Light *light) : _uri(uri), _light(light) {
 

@@ -5,9 +5,7 @@
 #include <web/GetRequestHandler.hpp>
 #include <web/ConfigPageGetRequestHandler.hpp>
 #include <web/SettingsFormTemplate.hpp>
-#include <web/LightFormTemplate.hpp>
 #include <web/PostRequestHandler.hpp>
-#include <web/LightPostRequestHandler.hpp>
 
 #include <Light.hpp>
 

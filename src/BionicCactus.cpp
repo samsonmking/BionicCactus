@@ -3,11 +3,7 @@
 #include <Arduino.h>
 #include <string.h>
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
-//Needed for WifiManager
-#include <ESP8266WebServer.h>
 #include <DNSServer.h>
-#include <WiFiManager.h>          //https://github.com/kentaylor/WiFiManager
-#include <PubSubClient.h>
 #include <Clock.hpp>
 #include <NTP.hpp>
 #include <LEDLight.hpp>
@@ -16,6 +12,15 @@
 #include <DFSoil.hpp>
 #include <SoilRunLoop.hpp>
 #include <ArduinoJson.h>
+
+#include <web/BCWebServer.hpp>
+#include <web/GetRequestHandler.hpp>
+#include <web/ConfigPageGetRequestHandler.hpp>
+#include <web/SettingsFormTemplate.hpp>
+#include <web/light/LightFormTemplate.hpp>
+#include <web/PostRequestHandler.hpp>
+#include <web/light/LightPostRequestHandler.hpp>
+
 
 // Constants
 const int PIN_LED = 2;
@@ -33,22 +38,25 @@ unsigned long logStart;
 unsigned long logTime = 1000;
 
 WiFiClient wifiClient;
-PubSubClient mqtt(wifiClient);
 
 NTP* ntp = NTP::getInstance();
 Clock clock(ntp, -5);
 PeriPump pump(clock, D7, D6, D8);
 LEDLight ledLight(clock, D1);
+Light *light = &ledLight;
 DFSoil dfSoil(A0);
 //MockSoilSensor dfSoil(85);
 SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
 
-// Function Prototypes
-void connectWifiIfConfigured();
-void configureWifi();
-void onSubscribed(char* topic, byte* payload, unsigned int length);
-void connectMqtt();
-void logVals();
+// Web Server Initializatoin
+ESP8266WebServer engine(80);
+LightPostRequestHandler lightPostHandler("/config/light/submit", light);
+PostRequestHandler *lightPostRequest = &lightPostHandler;
+LightFormTemplate lightFormTemplate(lightPostRequest->getURI(), light);
+SettingsFormTemplate *lightForm = &lightFormTemplate;
+ConfigPageGetRequestHandler getLightConfig("/config/light", "Bionic Cactus Light", "Light Configuration", lightForm);
+GetRequestHandler *lightGetRequest = &getLightConfig;
+BCWebServer webServer(&engine, lightPostRequest, lightGetRequest);
 
 void setup() {
   snprintf(devId, 24, "%u", devIdNum);
@@ -56,102 +64,39 @@ void setup() {
   pinMode(PIN_LED, OUTPUT);
   pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
-  connectWifiIfConfigured();
-  mqtt.setServer(mqtt_server, 1883);
-  mqtt.setCallback(onSubscribed);
-  ledLight.setTimeOn("9:00:00");
-  ledLight.setTimeOff("17:00:00");
+  WiFi.softAP("DevAP", "password");
+  light->setTimeOn("9:00:00");
+  light->setTimeOff("17:00:00");
   Serial.println(devId);
+
+  webServer.setupServer();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  switch (state) {
-    case Looping:
-      if (digitalRead(WIFI_TRIGGER_PIN) == LOW) {
-        state = Priming;
-        return;
-      }
-      ledLight.loop();
-      dfSoil.loop();
-      pump.loop();
-      soilRunLoop.loop();
-      connectWifiIfConfigured();
-      connectMqtt();
-      logVals();
-      mqtt.loop();      
-      break;
-    case Priming:
-      pump.prime();
-      if (digitalRead(WIFI_TRIGGER_PIN) == HIGH) {
-        pump.stop();
-        state = Looping;
-      }
-      break;
-  }
+  // switch (state) {
+  //   case Looping:
+  //     if (digitalRead(WIFI_TRIGGER_PIN) == LOW) {
+  //       state = Priming;
+  //       return;
+  //     }
+  //     ledLight.loop();
+  //     dfSoil.loop();
+  //     pump.loop();
+  //     soilRunLoop.loop();
+  //     connectWifiIfConfigured();      
+  //     break;
+  //   case Priming:
+  //     pump.prime();
+  //     if (digitalRead(WIFI_TRIGGER_PIN) == HIGH) {
+  //       pump.stop();
+  //       state = Looping;
+  //     }
+  //     break;
+  // }
+  webServer.loop();
 }
 
-void logVals() {
-  if (!mqtt.connected()) return;
-  if (WiFi.status() != WL_CONNECTED) return;
-  unsigned long now = clock.getMillis();
-  if ((now - logStart) < logTime) {
-    return;
-  }
-  StaticJsonBuffer<200> humBuffer;
-  JsonObject& humRoot = humBuffer.createObject();
-  humRoot["deviceID"] = devIdNum;
-  humRoot["value"] = dfSoil.readPercent();
-  humRoot["time"] = clock.getCurrentTime();
-  char payload[500];
-  humRoot.printTo(payload, 500);
-  mqtt.publish(humTopic, payload);
-  logStart = now;
-}
 
-void connectMqtt() {
-  if(!mqtt.connected()) {
-    Serial.println("connecting mqtt");
-    if (!mqtt.connect(devId)) {
-      Serial.print("failed, rc=");
-      Serial.print(mqtt.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
-    }
-  }
-}
-
-void onSubscribed(char* topic, byte* payload, unsigned int length) {
-
-}
-
-void connectWifiIfConfigured() {
-  if (WiFi.status() == WL_CONNECTED) {
-    return;
-  }
-  if (WiFi.SSID() == "")
-  {
-    initialWifiConfig = true;
-    return;
-  }
-  WiFi.mode(WIFI_STA);
-  WiFi.waitForConnectResult();
-  if (WiFi.status()!=WL_CONNECTED){
-    Serial.println("failed to connect, finishing setup anyway");
-  } else{
-    digitalWrite(PIN_LED, HIGH);
-    Serial.print("local ip: ");
-    Serial.println(WiFi.localIP());
-  }
-}
-
-void configureWifi() {
-  digitalWrite(PIN_LED, LOW);
-  WiFiManager wifiManager;
-  wifiManager.startConfigPortal("BionicCactus");
-  digitalWrite(PIN_LED, HIGH);
-  ESP.reset();
-  delay(5000);
-}
 
 #endif
