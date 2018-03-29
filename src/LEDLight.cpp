@@ -3,6 +3,8 @@
 LEDLight::LEDLight(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin), _brightness(100) {
   _lastOutput = 0;
   analogWrite(_lightPin, _lastOutput);
+  // setTimeOn("9:00:00");
+  // setTimeOff("17:00:00");
 }
 
 int LEDLight::getBrightness() {
