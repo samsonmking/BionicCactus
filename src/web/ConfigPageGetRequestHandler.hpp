@@ -11,15 +11,15 @@ class ConfigPageGetRequestHandler : public GetRequestHandler {
         inline virtual const char *getURI() override {
             return _uri;
         };
-        virtual void getHTML(char *out) override;
+        virtual void getHTML(char *out, size_t len) override;
     private:
         const char *_uri;
         const char *_title;
         const char *_h1;
         SettingsFormTemplate *_formTemplate;
-        void formatHeader(char *out);
-        void formatForm(char *out);
-        void formatFooter(char *out);
+        int formatHeader(char *out, size_t len);
+        int formatForm(char *out, size_t len);
+        int formatFooter(char *out, size_t len);
 };
 
 #endif

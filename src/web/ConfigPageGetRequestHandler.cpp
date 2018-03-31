@@ -8,13 +8,15 @@ _formTemplate(formTemplate) {
 
 }
 
-void ConfigPageGetRequestHandler::getHTML(char *out) {
-    formatHeader(out);
-    formatForm(out);
-    formatFooter(out);
+void ConfigPageGetRequestHandler::getHTML(char *out, size_t len) {
+    char *pos = out;
+    char *end = out + len;
+    pos += formatHeader(pos, end - pos);
+    pos += formatForm(pos, end - pos);
+    pos += formatFooter(pos, end - pos);
 }
 
-void ConfigPageGetRequestHandler::formatHeader(char *out) {
+int ConfigPageGetRequestHandler::formatHeader(char *out, size_t len) {
     const char *pageHeader = R"(
     <html>
         <head>
@@ -22,16 +24,16 @@ void ConfigPageGetRequestHandler::formatHeader(char *out) {
             <title>%s</title>
         </head>
         <h1>%s</h1>)";
-    sprintf(out + strlen(out), pageHeader, _title, _h1);
+    return snprintf(out, len, pageHeader, _title, _h1);
 }
 
-void ConfigPageGetRequestHandler::formatForm(char *out) {
-    _formTemplate->getForm(out + strlen(out));
+int ConfigPageGetRequestHandler::formatForm(char *out, size_t len) {
+    return _formTemplate->getForm(out, len);
 }
 
-void ConfigPageGetRequestHandler::formatFooter(char *out) {
+int ConfigPageGetRequestHandler::formatFooter(char *out, size_t len) {
     const char *pageFooter = R"(
     </html>
     )";
-    sprintf(out + strlen(out), pageFooter);
+    return snprintf(out, len, pageFooter);
 }

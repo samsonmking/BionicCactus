@@ -1,9 +1,11 @@
 #ifndef SETTINGS_FORM_TEMPLATE_H
 #define SETTINGS_FORM_TEMPLATE_H
 
+#include <Arduino.h>
+
 class SettingsFormTemplate {
 public:
-    virtual void getForm(char *out) = 0;
+    virtual int getForm(char *out, size_t len) = 0;
 };
 
 #endif

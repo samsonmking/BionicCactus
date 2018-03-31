@@ -25,7 +25,7 @@ void BCWebServer::setupServer() {
 }
 
 void BCWebServer::handleGet(GetRequestHandler *request) {
-    request->getHTML(_buffer);
+    request->getHTML(_buffer, sizeof(_buffer));
     _ws->send(200, "text/html", _buffer);
 }
 

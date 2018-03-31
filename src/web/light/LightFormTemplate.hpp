@@ -8,7 +8,7 @@
 class LightFormTemplate : public SettingsFormTemplate {
 public:
     LightFormTemplate(const char *postUri, Light *light);
-    virtual void getForm(char *out) override;
+    virtual int getForm(char *out, size_t len) override;
 private:
     const char *_postUri;
     Light *_light;

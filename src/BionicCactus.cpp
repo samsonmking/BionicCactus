@@ -11,7 +11,10 @@
 #include <mock/MockSoilSensor.hpp>
 #include <DFSoil.hpp>
 #include <SoilRunLoop.hpp>
-#include <ArduinoJson.h>
+
+#include <FS.h>
+#include <persistance/FileHandler.hpp>
+#include <persistance/LightFileHandler.hpp>
 
 #include <web/BCWebServer.hpp>
 #include <web/GetRequestHandler.hpp>
@@ -25,15 +28,12 @@
 // Constants
 const int PIN_LED = 2;
 const int WIFI_TRIGGER_PIN = D3;
-const char* mqtt_server = "192.168.1.100";
 enum States { Looping, Priming };
 
 // Global Variables
 States state = Looping;
 bool initialWifiConfig = false;
 uint32 devIdNum = ESP.getChipId();
-char devId[25];
-char humTopic[50];
 unsigned long logStart;
 unsigned long logTime = 1000;
 
@@ -48,9 +48,14 @@ DFSoil dfSoil(A0);
 //MockSoilSensor dfSoil(85);
 SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
 
+// File Persistance Initialization
+
+LightFileHandler alightPersistance(light);
+FileHandler *lightPersistance = &alightPersistance;
+
 // Web Server Initializatoin
 ESP8266WebServer engine(80);
-LightPostRequestHandler lightPostHandler("/config/light/submit", light);
+LightPostRequestHandler lightPostHandler("/config/light/submit", light, lightPersistance);
 PostRequestHandler *lightPostRequest = &lightPostHandler;
 LightFormTemplate lightFormTemplate(lightPostRequest->getURI(), light);
 SettingsFormTemplate *lightForm = &lightFormTemplate;
@@ -59,17 +64,15 @@ GetRequestHandler *lightGetRequest = &getLightConfig;
 BCWebServer webServer(&engine, lightPostRequest, lightGetRequest);
 
 void setup() {
-  snprintf(devId, 24, "%u", devIdNum);
-  snprintf(humTopic, 49, "/%u/DFSoil", devIdNum);
   pinMode(PIN_LED, OUTPUT);
   pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
   WiFi.softAP("DevAP", "password");
-  light->setTimeOn("9:00:00");
-  light->setTimeOff("17:00:00");
-  Serial.println(devId);
 
   webServer.setupServer();
+
+  SPIFFS.begin();
+  lightPersistance->load();
 }
 
 void loop() {
