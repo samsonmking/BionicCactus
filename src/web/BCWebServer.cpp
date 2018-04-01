@@ -1,9 +1,11 @@
 #include <web/BCWebServer.hpp>
 
-BCWebServer::BCWebServer(ESP8266WebServer *ws, 
+BCWebServer::BCWebServer(ESP8266WebServer *ws,
+GetRequestHandler *indexGetRequest, 
 PostRequestHandler *lightPostRequest,
 GetRequestHandler *lightGetRequest) : 
 _ws(ws),
+_getIndex(indexGetRequest),
 _postLightConfig(lightPostRequest),
 _getLightConfig(lightGetRequest) {
     _buffer[0] = 0;
@@ -11,10 +13,13 @@ _getLightConfig(lightGetRequest) {
 
 void BCWebServer::setupServer() {
     // Configure Endpoints
+    _ws->on(_getIndex->getURI(), [this]() {
+        _buffer[0] = 0;
+        handleGet(_getIndex);
+    });
     _ws->on(_getLightConfig->getURI(), [this]() {
         _buffer[0] = 0;
-        handleGet(_getLightConfig);
-        
+        handleGet(_getLightConfig);   
     });
     _ws->on(_postLightConfig->getURI(), [this]() {
         _buffer[0] = 0;

@@ -3,19 +3,20 @@
 
 #include <web/GetRequestHandler.hpp>
 #include <web/SettingsFormTemplate.hpp>
+#include <web/Header.hpp>
 #include <Arduino.h>
 
 class ConfigPageGetRequestHandler : public GetRequestHandler {
     public:
-        ConfigPageGetRequestHandler(const char *uri, const char *title, const char *h1, SettingsFormTemplate *formTemplate);
+        ConfigPageGetRequestHandler(const char *uri, const char *subheading, Header &header, SettingsFormTemplate *formTemplate);
         inline virtual const char *getURI() override {
             return _uri;
         };
         virtual void getHTML(char *out, size_t len) override;
     private:
         const char *_uri;
-        const char *_title;
-        const char *_h1;
+        Header _header;
+        const char *_subheading;
         SettingsFormTemplate *_formTemplate;
         int formatHeader(char *out, size_t len);
         int formatForm(char *out, size_t len);

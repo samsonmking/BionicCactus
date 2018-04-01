@@ -8,9 +8,9 @@ int LightFormTemplate::getForm(char *out, size_t len) {
     char *pos = out;
     char *end = out + len;
     const char *formOpening = R"(<Form action="%s" method="post">)";
-    const char *brightnessInput = R"(Brightness<br><input type = "text" name = "brightness" value = "%d"><br>)";
-    const char *timeOnInput = R"(Time On<br><input type = "text" name = "timeOn" value = "%s"><br>)";
-    const char *timeOffInput = R"(Time Off<br><input type = "text" name = "timeOff" value = "%s"><br>)";
+    const char *brightnessInput = R"(<p>Brightness<br><input type = "text" name = "brightness" value = "%d"></p>)";
+    const char *timeOnInput = R"(<p>Time On<br><input type = "text" name = "timeOn" value = "%s"></p>)";
+    const char *timeOffInput = R"(<p>Time Off<br><input type = "text" name = "timeOff" value = "%s"></p>)";
     const char *formClosing = R"(<input type="submit" value="Submit"></Form>)";
     
     pos += snprintf(pos, end - pos, formOpening, _postUri);

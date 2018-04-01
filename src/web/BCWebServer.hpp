@@ -12,6 +12,7 @@
 class BCWebServer {
 public:
     BCWebServer(ESP8266WebServer *ws, 
+        GetRequestHandler *indexGetRequest,
         PostRequestHandler *lightPostRequest,
         GetRequestHandler *lightGetRequest);
     void setupServer();
@@ -22,6 +23,7 @@ private:
     ESP8266WebServer *_ws;
     PostRequestHandler *_postLightConfig;
     GetRequestHandler *_getLightConfig;
+    GetRequestHandler *_getIndex;
     void handleGet(GetRequestHandler *request);
     void handlePost(PostRequestHandler *request);
     void redirect(const char *uri);
