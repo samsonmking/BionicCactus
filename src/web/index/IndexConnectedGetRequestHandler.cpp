@@ -1,4 +1,4 @@
-#include <web/index_connected/IndexConnectedGetRequestHandler.hpp>
+#include <web/index/IndexConnectedGetRequestHandler.hpp>
 
 IndexConnectedGetRequestHandler::IndexConnectedGetRequestHandler(Header &header, const char *lightUri) : 
 _header(header),

@@ -18,6 +18,7 @@
 
 #include <web/BCWebServer.hpp>
 #include <web/GetRequestHandler.hpp>
+#include <web/index/IndexConnectedGetRequestHandler.hpp>
 #include <web/ConfigPageGetRequestHandler.hpp>
 #include <web/SettingsFormTemplate.hpp>
 #include <web/light/LightFormTemplate.hpp>
@@ -55,13 +56,16 @@ FileHandler *lightPersistance = &alightPersistance;
 
 // Web Server Initializatoin
 ESP8266WebServer engine(80);
+Header header;
 LightPostRequestHandler lightPostHandler("/config/light/submit", light, lightPersistance);
 PostRequestHandler *lightPostRequest = &lightPostHandler;
 LightFormTemplate lightFormTemplate(lightPostRequest->getURI(), light);
 SettingsFormTemplate *lightForm = &lightFormTemplate;
-ConfigPageGetRequestHandler getLightConfig("/config/light", "Bionic Cactus Light", "Light Configuration", lightForm);
+ConfigPageGetRequestHandler getLightConfig("/config/light", "Light Configuration", header, lightForm);
 GetRequestHandler *lightGetRequest = &getLightConfig;
-BCWebServer webServer(&engine, lightPostRequest, lightGetRequest);
+IndexConnectedGetRequestHandler aGetIndexConnected(header, lightGetRequest->getURI());
+GetRequestHandler *getIndexConnected = &aGetIndexConnected;
+BCWebServer webServer(&engine, getIndexConnected, lightPostRequest, lightGetRequest);
 
 void setup() {
   pinMode(PIN_LED, OUTPUT);
