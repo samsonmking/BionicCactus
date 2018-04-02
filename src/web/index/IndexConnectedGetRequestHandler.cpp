@@ -1,8 +1,9 @@
 #include <web/index/IndexConnectedGetRequestHandler.hpp>
 
-IndexConnectedGetRequestHandler::IndexConnectedGetRequestHandler(Header &header, const char *lightUri) : 
+IndexConnectedGetRequestHandler::IndexConnectedGetRequestHandler(Header &header, const char *lightUri, const char *pumpUri) : 
 _header(header),
-_lightUri(lightUri) {
+_lightUri(lightUri),
+_pumpUri(pumpUri) {
 
 }
 
@@ -14,11 +15,8 @@ void IndexConnectedGetRequestHandler::getHTML(char *out, size_t len) {
     char *pos = out;
     char *end = out + len;
     pos += _header.getHeader(pos, end - pos);
-    const char *body = R"(<h2>Settings</h2>
-	    <ul>
-	    	<li><a href="/config/light">Light</a></li>
-	    </ul>
-	</body>
-</html>)";
-    pos += snprintf(pos, end - pos, body);
+    pos += snprintf(pos, end - pos, R"(<h2>Settings</h2><ul>)");
+    pos += snprintf(pos, end - pos, R"(<li><a href="%s">Light</a></li>)", _lightUri);
+    pos += snprintf(pos, end - pos, R"(<li><a href="%s">Pump</a></li>)", _pumpUri);
+    pos += snprintf(pos, end - pos, R"(</ul></body></html>)");
 }

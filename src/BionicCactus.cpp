@@ -15,6 +15,7 @@
 #include <FS.h>
 #include <persistance/FileHandler.hpp>
 #include <persistance/LightFileHandler.hpp>
+#include <persistance/PeriPumpFileHandler.hpp>
 
 #include <web/BCWebServer.hpp>
 #include <web/GetRequestHandler.hpp>
@@ -24,6 +25,8 @@
 #include <web/light/LightFormTemplate.hpp>
 #include <web/PostRequestHandler.hpp>
 #include <web/light/LightPostRequestHandler.hpp>
+#include <web/pump/PeriPumpFormTemplate.hpp>
+#include <web/pump/PeriPumpPostRequestHandler.hpp>
 
 
 // Constants
@@ -50,22 +53,33 @@ DFSoil dfSoil(A0);
 SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
 
 // File Persistance Initialization
-
 LightFileHandler alightPersistance(light);
 FileHandler *lightPersistance = &alightPersistance;
+PeriPumpFileHandler aPumpPersistance(pump);
+FileHandler *pumpPersistance = &aPumpPersistance;
 
 // Web Server Initializatoin
 ESP8266WebServer engine(80);
 Header header;
+
 LightPostRequestHandler lightPostHandler("/config/light/submit", light, lightPersistance);
 PostRequestHandler *lightPostRequest = &lightPostHandler;
 LightFormTemplate lightFormTemplate(lightPostRequest->getURI(), light);
 SettingsFormTemplate *lightForm = &lightFormTemplate;
 ConfigPageGetRequestHandler getLightConfig("/config/light", "Light Configuration", header, lightForm);
 GetRequestHandler *lightGetRequest = &getLightConfig;
-IndexConnectedGetRequestHandler aGetIndexConnected(header, lightGetRequest->getURI());
+
+PeriPumpPostRequestHandler aPumpPostRequest("/config/pump/submit", pump, pumpPersistance);
+PostRequestHandler *pumpPostRequest = &aPumpPostRequest;
+PeriPumpFormTemplate aPumpFormTemplate(pumpPostRequest->getURI(), pump);
+SettingsFormTemplate *pumpForm = &aPumpFormTemplate;
+ConfigPageGetRequestHandler getPumpConfig("/config/pump", "Pump Configuration", header, pumpForm);
+GetRequestHandler *pumpGetRequest = &getPumpConfig;
+
+IndexConnectedGetRequestHandler aGetIndexConnected(header, lightGetRequest->getURI(), pumpGetRequest->getURI());
 GetRequestHandler *getIndexConnected = &aGetIndexConnected;
-BCWebServer webServer(&engine, getIndexConnected, lightPostRequest, lightGetRequest);
+
+BCWebServer webServer(&engine, getIndexConnected, lightPostRequest, lightGetRequest, pumpPostRequest, pumpGetRequest);
 
 void setup() {
   pinMode(PIN_LED, OUTPUT);
@@ -77,6 +91,7 @@ void setup() {
 
   SPIFFS.begin();
   lightPersistance->load();
+  pumpPersistance->load();
 }
 
 void loop() {

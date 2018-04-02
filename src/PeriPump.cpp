@@ -1,10 +1,18 @@
 #include <PeriPump.hpp>
 
 PeriPump::PeriPump(Clock& clock, int pinOut1, int pinOut2, int pinPWM) :
-_clock(clock), _pinOut1(pinOut1), _pinOut2(pinOut2), _pinPWM(pinPWM), _stopTime(0) {
+_clock(clock), _pinOut1(pinOut1), _pinOut2(pinOut2), _pinPWM(pinPWM), _stopTime(0), _flowRate(1.2l) {
   pinMode(_pinOut1, OUTPUT);
   pinMode(_pinOut2, OUTPUT);
   stop();
+}
+
+double PeriPump::getFlowRate() {
+  return _flowRate;
+}
+
+void PeriPump::setFlowRate(double flowRate) {
+  _flowRate = flowRate;
 }
 
 void PeriPump::runPump(int speed, Directions dir) {

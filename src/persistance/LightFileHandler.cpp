@@ -17,6 +17,9 @@ void LightFileHandler::save() {
 
 void LightFileHandler::load() {
     auto file = SPIFFS.open(_filePath, "r");
+    if (!file) {
+        return;
+    }
     StaticJsonBuffer<CONST_FILE_LENGTH> jsonBuffer;
     auto &settingsRoot = jsonBuffer.parseObject(file);
     file.close();

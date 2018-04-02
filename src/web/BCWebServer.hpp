@@ -14,7 +14,9 @@ public:
     BCWebServer(ESP8266WebServer *ws, 
         GetRequestHandler *indexGetRequest,
         PostRequestHandler *lightPostRequest,
-        GetRequestHandler *lightGetRequest);
+        GetRequestHandler *lightGetRequest,
+        PostRequestHandler *pumpPostRequest,
+        GetRequestHandler *pumpGetRequest);
     void setupServer();
     void loop();
 private:
@@ -24,9 +26,12 @@ private:
     PostRequestHandler *_postLightConfig;
     GetRequestHandler *_getLightConfig;
     GetRequestHandler *_getIndex;
+    PostRequestHandler *_pumpPostRequest;
+    GetRequestHandler *_pumpGetRequest;
     void handleGet(GetRequestHandler *request);
     void handlePost(PostRequestHandler *request);
     void redirect(const char *uri);
+    void resetBuffer();
 };
 
 #endif

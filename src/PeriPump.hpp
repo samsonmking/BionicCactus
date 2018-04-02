@@ -21,9 +21,8 @@ public:
   void setSpeed(int speed) {
     _speed = speed;
   };
-  void setFlowRate(int flowRate) {
-    _flowRate = flowRate;
-  };
+  void setFlowRate(double flowRate);
+  double getFlowRate();
   void runPump(int speed, Directions dir);
   void stop();
 private:
@@ -32,7 +31,7 @@ private:
   int _pinOut2;
   int _pinPWM;
   int _speed = 100;
-  float _flowRate = 1.2;
+  double _flowRate;
   unsigned long _startTime;
   unsigned long _stopTime;
 };

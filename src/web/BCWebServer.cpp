@@ -3,28 +3,41 @@
 BCWebServer::BCWebServer(ESP8266WebServer *ws,
 GetRequestHandler *indexGetRequest, 
 PostRequestHandler *lightPostRequest,
-GetRequestHandler *lightGetRequest) : 
+GetRequestHandler *lightGetRequest,
+PostRequestHandler *pumpPostRequest,
+GetRequestHandler *pumpGetRequest) : 
 _ws(ws),
 _getIndex(indexGetRequest),
 _postLightConfig(lightPostRequest),
-_getLightConfig(lightGetRequest) {
-    _buffer[0] = 0;
+_getLightConfig(lightGetRequest),
+_pumpPostRequest(pumpPostRequest),
+_pumpGetRequest(pumpGetRequest) {
+    resetBuffer();
 }
 
 void BCWebServer::setupServer() {
     // Configure Endpoints
     _ws->on(_getIndex->getURI(), [this]() {
-        _buffer[0] = 0;
+        resetBuffer();
         handleGet(_getIndex);
     });
     _ws->on(_getLightConfig->getURI(), [this]() {
-        _buffer[0] = 0;
+        resetBuffer();
         handleGet(_getLightConfig);   
     });
     _ws->on(_postLightConfig->getURI(), [this]() {
-        _buffer[0] = 0;
+        resetBuffer();
         handlePost(_postLightConfig);
         redirect(_getLightConfig->getURI());
+    });
+    _ws->on(_pumpGetRequest->getURI(), [this]() {
+        resetBuffer();
+        handleGet(_pumpGetRequest);
+    });
+    _ws->on(_pumpPostRequest->getURI(), [this]() {
+        resetBuffer();
+        handlePost(_pumpPostRequest);
+        redirect(_pumpGetRequest->getURI());
     });
     _ws->begin();
 }
@@ -46,6 +59,10 @@ void BCWebServer::handlePost(PostRequestHandler *request) {
 void BCWebServer::redirect(const char *uri) {
     _ws->sendHeader("Location", uri, true);
     _ws->send(302, "text/plain", "");
+}
+
+void BCWebServer::resetBuffer() {
+    _buffer[0] = 0;
 }
 
 void BCWebServer::loop() {
