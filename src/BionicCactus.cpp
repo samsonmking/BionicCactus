@@ -16,6 +16,8 @@
 #include <persistance/FileHandler.hpp>
 #include <persistance/LightFileHandler.hpp>
 #include <persistance/PeriPumpFileHandler.hpp>
+#include <persistance/DFSoilFileHandler.hpp>
+using namespace Persistance;
 
 #include <web/BCWebServer.hpp>
 #include <web/GetRequestHandler.hpp>
@@ -27,7 +29,9 @@
 #include <web/light/LightPostRequestHandler.hpp>
 #include <web/pump/PeriPumpFormTemplate.hpp>
 #include <web/pump/PeriPumpPostRequestHandler.hpp>
-
+#include <web/soil/DFSoilFormTemplate.hpp>
+#include <web/soil/DFSoilPostRequestHandler.hpp>
+using namespace Web;
 
 // Constants
 const int PIN_LED = 2;
@@ -57,6 +61,8 @@ LightFileHandler alightPersistance(light);
 FileHandler *lightPersistance = &alightPersistance;
 PeriPumpFileHandler aPumpPersistance(pump);
 FileHandler *pumpPersistance = &aPumpPersistance;
+DFSoilFileHandler aSoilPersistance(dfSoil);
+FileHandler *soilPersistance = &aSoilPersistance;
 
 // Web Server Initializatoin
 ESP8266WebServer engine(80);
@@ -76,10 +82,29 @@ SettingsFormTemplate *pumpForm = &aPumpFormTemplate;
 ConfigPageGetRequestHandler getPumpConfig("/config/pump", "Pump Configuration", header, pumpForm);
 GetRequestHandler *pumpGetRequest = &getPumpConfig;
 
-IndexConnectedGetRequestHandler aGetIndexConnected(header, lightGetRequest->getURI(), pumpGetRequest->getURI());
+DFSoilPostRequestHandler aSoilPostRequest("/config/soil/submit", dfSoil, soilPersistance);
+PostRequestHandler *soilPostRequest = &aSoilPostRequest;
+DFSoilFormTemplate aSoilFormTemplate(soilPostRequest->getURI(), dfSoil);
+SettingsFormTemplate *soilForm = &aSoilFormTemplate;
+ConfigPageGetRequestHandler getSoilConfig("/config/soil", "Soil Configuration", header, soilForm);
+GetRequestHandler *soilGetRequest = &getSoilConfig;
+
+IndexConnectedGetRequestHandler aGetIndexConnected(
+header, 
+lightGetRequest->getURI(), 
+pumpGetRequest->getURI(), 
+soilGetRequest->getURI());
 GetRequestHandler *getIndexConnected = &aGetIndexConnected;
 
-BCWebServer webServer(&engine, getIndexConnected, lightPostRequest, lightGetRequest, pumpPostRequest, pumpGetRequest);
+BCWebServer webServer(
+&engine, 
+getIndexConnected, 
+lightPostRequest, 
+lightGetRequest, 
+pumpPostRequest, 
+pumpGetRequest, 
+soilPostRequest, 
+soilGetRequest);
 
 void setup() {
   pinMode(PIN_LED, OUTPUT);
@@ -92,6 +117,7 @@ void setup() {
   SPIFFS.begin();
   lightPersistance->load();
   pumpPersistance->load();
+  soilPersistance->load();
 }
 
 void loop() {

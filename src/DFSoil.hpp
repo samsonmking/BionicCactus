@@ -14,10 +14,16 @@ public:
     _high = high;
     calculateConstants();
   };
+  int getHigh() {
+    return _high;
+  }
   void setLow(int low) {
     _low = low;
     calculateConstants();
   };
+  int getLow() {
+    return _low;
+  }
   int readRaw();
   virtual int readPercent();
   int calculatePercent(int raw);

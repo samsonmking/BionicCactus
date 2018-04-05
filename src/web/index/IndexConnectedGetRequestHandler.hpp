@@ -7,7 +7,7 @@
 
 class IndexConnectedGetRequestHandler : public GetRequestHandler {
 public:
-    IndexConnectedGetRequestHandler(Header &header, const char *lightUri, const char *pumpUri);
+    IndexConnectedGetRequestHandler(Header &header, const char *lightUri, const char *pumpUri, const char *soilUri);
     inline virtual const char *getURI() override {
             return "/";
     };
@@ -16,6 +16,7 @@ private:
     Header _header;
     const char *_lightUri;
     const char *_pumpUri;
+    const char *_soilUri;
 };
 
 #endif

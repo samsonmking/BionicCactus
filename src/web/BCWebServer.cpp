@@ -5,13 +5,17 @@ GetRequestHandler *indexGetRequest,
 PostRequestHandler *lightPostRequest,
 GetRequestHandler *lightGetRequest,
 PostRequestHandler *pumpPostRequest,
-GetRequestHandler *pumpGetRequest) : 
+GetRequestHandler *pumpGetRequest,
+PostRequestHandler *soilPostRequest,
+GetRequestHandler *soilGetRequest) : 
 _ws(ws),
 _getIndex(indexGetRequest),
 _postLightConfig(lightPostRequest),
 _getLightConfig(lightGetRequest),
 _pumpPostRequest(pumpPostRequest),
-_pumpGetRequest(pumpGetRequest) {
+_pumpGetRequest(pumpGetRequest),
+_soilPostRequest(soilPostRequest),
+_soilGetRequest(soilGetRequest) {
     resetBuffer();
 }
 
@@ -38,6 +42,15 @@ void BCWebServer::setupServer() {
         resetBuffer();
         handlePost(_pumpPostRequest);
         redirect(_pumpGetRequest->getURI());
+    });
+    _ws->on(_soilPostRequest->getURI(), [this]() {
+        resetBuffer();
+        handlePost(_soilPostRequest);
+        redirect(_soilGetRequest->getURI());
+    });
+    _ws->on(_soilGetRequest->getURI(), [this]() {
+        resetBuffer();
+        handleGet(_soilGetRequest);
     });
     _ws->begin();
 }
