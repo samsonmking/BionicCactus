@@ -17,7 +17,7 @@
 #include <persistance/LightFileHandler.hpp>
 #include <persistance/PeriPumpFileHandler.hpp>
 #include <persistance/DFSoilFileHandler.hpp>
-using namespace Persistance;
+#include <persistance/RunLoopFileHandler.hpp>
 
 #include <web/BCWebServer.hpp>
 #include <web/GetRequestHandler.hpp>
@@ -31,6 +31,10 @@ using namespace Persistance;
 #include <web/pump/PeriPumpPostRequestHandler.hpp>
 #include <web/soil/DFSoilFormTemplate.hpp>
 #include <web/soil/DFSoilPostRequestHandler.hpp>
+#include <web/runloop/RunLoopFormTemplate.hpp>
+#include <web/runloop/RunLoopPostRequestHandler.hpp>
+
+using namespace Persistance;
 using namespace Web;
 
 // Constants
@@ -63,8 +67,10 @@ PeriPumpFileHandler aPumpPersistance(pump);
 FileHandler *pumpPersistance = &aPumpPersistance;
 DFSoilFileHandler aSoilPersistance(dfSoil);
 FileHandler *soilPersistance = &aSoilPersistance;
+RunLoopFileHandler aRunLoopPersistance(soilRunLoop);
+FileHandler *runLoopPersistance = &aRunLoopPersistance;
 
-// Web Server Initializatoin
+// Web Server Initialization
 ESP8266WebServer engine(80);
 Header header;
 
@@ -89,11 +95,19 @@ SettingsFormTemplate *soilForm = &aSoilFormTemplate;
 ConfigPageGetRequestHandler getSoilConfig("/config/soil", "Soil Configuration", header, soilForm);
 GetRequestHandler *soilGetRequest = &getSoilConfig;
 
+RunLoopPostRequestHandler aRunLoopPostRequest("/config/runloop/submit", soilRunLoop, runLoopPersistance);
+PostRequestHandler *runLoopPostRequest = &aRunLoopPostRequest;
+RunLoopFormTemplate aRunLoopForm(runLoopPostRequest->getURI(), soilRunLoop);
+SettingsFormTemplate *runLoopForm = &aRunLoopForm;
+ConfigPageGetRequestHandler getRunLoopConfig("/config/runloop", "Run Loop Configuration", header, runLoopForm);
+GetRequestHandler *runLoopGetRequest = &getRunLoopConfig;
+
 IndexConnectedGetRequestHandler aGetIndexConnected(
 header, 
 lightGetRequest->getURI(), 
 pumpGetRequest->getURI(), 
-soilGetRequest->getURI());
+soilGetRequest->getURI(),
+runLoopGetRequest->getURI());
 GetRequestHandler *getIndexConnected = &aGetIndexConnected;
 
 BCWebServer webServer(
@@ -104,7 +118,9 @@ lightGetRequest,
 pumpPostRequest, 
 pumpGetRequest, 
 soilPostRequest, 
-soilGetRequest);
+soilGetRequest,
+runLoopPostRequest,
+runLoopGetRequest);
 
 void setup() {
   pinMode(PIN_LED, OUTPUT);
@@ -118,6 +134,7 @@ void setup() {
   lightPersistance->load();
   pumpPersistance->load();
   soilPersistance->load();
+  runLoopPersistance->load();
 }
 
 void loop() {

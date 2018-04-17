@@ -16,23 +16,44 @@ public:
   void setSetPoint(int setPoint) {
     _setPoint = setPoint;
   };
+  int getSetPoint() {
+    return _setPoint;
+  }
   void setTolerance(int tolerance) {
     _tolerance = tolerance;
+  }
+  int getTolerance() {
+    return _tolerance;
   }
   void setMaxDispense(int max) {
     _maxDispense = max;
   }
+  int getMaxDispense() {
+    return _maxDispense;
+  }
   void setmlPerPercent(int scale) {
     _mlPerPercent = scale;
   }
+  int getmlPerPercent() {
+    return _mlPerPercent;
+  }
   void setHrsAtMoisture(int hrs) {
-    _timeAtMoisture = 3600000 * (unsigned long)hrs;
+    _timeAtMoisture = MILLISPERHOUR * (unsigned long)hrs;
   };
+  int getHrsAtMoisture() {
+    return _timeAtMoisture / MILLISPERHOUR;
+  }
   void setHrsDry(int hrs) {
-    _timeAtDry = 3600000 * (unsigned long)hrs;
+    _timeAtDry = MILLISPERHOUR * (unsigned long)hrs;
   };
+  int getHrsDry() {
+    return _timeAtDry / MILLISPERHOUR;
+  }
   void setDispersionMin(int min) {
-    _disperseTime = 60000 * (unsigned long)min;
+    _disperseTime = MILLISPERMIN * (unsigned long)min;
+  }
+  int getDispersionMin() {
+    return _disperseTime / MILLISPERMIN;
   }
   void loop();
 private:
@@ -44,7 +65,8 @@ private:
   int _tolerance = 1;
   int _maxDispense = 50;
   float _mlPerPercent = 4;
-  //unsigned long _disperseTime = 600000;
+  const static unsigned long MILLISPERHOUR = 3600000;
+  const static unsigned long MILLISPERMIN = 60000;
   unsigned long _disperseTime = 200000;
   unsigned long _disperseStarted;
   unsigned long _timeAtMoisture = 43200000;

@@ -1,10 +1,15 @@
 #include <web/index/IndexConnectedGetRequestHandler.hpp>
 
-IndexConnectedGetRequestHandler::IndexConnectedGetRequestHandler(Header &header, const char *lightUri, const char *pumpUri, const char *soilUri) : 
+IndexConnectedGetRequestHandler::IndexConnectedGetRequestHandler(Header &header, 
+const char *lightUri, 
+const char *pumpUri, 
+const char *soilUri,
+const char *runLoopUri) : 
 _header(header),
 _lightUri(lightUri),
 _pumpUri(pumpUri),
-_soilUri(soilUri) {
+_soilUri(soilUri),
+_runLoopUri(runLoopUri) {
 
 }
 
@@ -20,5 +25,6 @@ void IndexConnectedGetRequestHandler::getHTML(char *out, size_t len) {
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Light</a></li>)", _lightUri);
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Pump</a></li>)", _pumpUri);
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Soil</a></li>)", _soilUri);
+    pos += snprintf(pos, end - pos, R"(<li><a href="%s">RunLoop</a></li>)", _runLoopUri);
     pos += snprintf(pos, end - pos, R"(</ul></body></html>)");
 }

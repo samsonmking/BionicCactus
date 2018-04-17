@@ -18,7 +18,9 @@ public:
         PostRequestHandler *pumpPostRequest,
         GetRequestHandler *pumpGetRequest,
         PostRequestHandler *soilPostRequest,
-        GetRequestHandler *soilGetRequest);
+        GetRequestHandler *soilGetRequest,
+        PostRequestHandler *runLoopPostRequest,
+        GetRequestHandler *runLoopGetRequest);
     void setupServer();
     void loop();
 private:
@@ -32,6 +34,8 @@ private:
     GetRequestHandler *_pumpGetRequest;
     PostRequestHandler *_soilPostRequest;
     GetRequestHandler *_soilGetRequest;
+    PostRequestHandler *_runLoopPostRequest;
+    GetRequestHandler *_runLoopGetRequest;
     void handleGet(GetRequestHandler *request);
     void handlePost(PostRequestHandler *request);
     void redirect(const char *uri);
