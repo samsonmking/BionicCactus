@@ -12,27 +12,27 @@
 #include <DFSoil.hpp>
 #include <SoilRunLoop.hpp>
 
-#include <FS.h>
-#include <persistance/FileHandler.hpp>
-#include <persistance/LightFileHandler.hpp>
-#include <persistance/PeriPumpFileHandler.hpp>
-#include <persistance/DFSoilFileHandler.hpp>
-#include <persistance/RunLoopFileHandler.hpp>
+#include "persistance/PersistanceContainer.hpp"
+#include "persistance/FileHandler.hpp"
+#include "persistance/LightFileHandler.hpp"
+#include "persistance/PeriPumpFileHandler.hpp"
+#include "persistance/DFSoilFileHandler.hpp"
+#include "persistance/RunLoopFileHandler.hpp"
 
-#include <web/BCWebServer.hpp>
-#include <web/GetRequestHandler.hpp>
-#include <web/index/IndexConnectedGetRequestHandler.hpp>
-#include <web/ConfigPageGetRequestHandler.hpp>
-#include <web/SettingsFormTemplate.hpp>
-#include <web/light/LightFormTemplate.hpp>
-#include <web/PostRequestHandler.hpp>
-#include <web/light/LightPostRequestHandler.hpp>
-#include <web/pump/PeriPumpFormTemplate.hpp>
-#include <web/pump/PeriPumpPostRequestHandler.hpp>
-#include <web/soil/DFSoilFormTemplate.hpp>
-#include <web/soil/DFSoilPostRequestHandler.hpp>
-#include <web/runloop/RunLoopFormTemplate.hpp>
-#include <web/runloop/RunLoopPostRequestHandler.hpp>
+#include "web/BCWebServer.hpp"
+#include "web/GetRequestHandler.hpp"
+#include "web/index/IndexConnectedGetRequestHandler.hpp"
+#include "web/ConfigPageGetRequestHandler.hpp"
+#include "web/SettingsFormTemplate.hpp"
+#include "web/light/LightFormTemplate.hpp"
+#include "web/PostRequestHandler.hpp"
+#include "web/light/LightPostRequestHandler.hpp"
+#include "web/pump/PeriPumpFormTemplate.hpp"
+#include "web/pump/PeriPumpPostRequestHandler.hpp"
+#include "web/soil/DFSoilFormTemplate.hpp"
+#include "web/soil/DFSoilPostRequestHandler.hpp"
+#include "web/runloop/RunLoopFormTemplate.hpp"
+#include "web/runloop/RunLoopPostRequestHandler.hpp"
 
 using namespace Persistance;
 using namespace Web;
@@ -69,6 +69,12 @@ DFSoilFileHandler aSoilPersistance(dfSoil);
 FileHandler *soilPersistance = &aSoilPersistance;
 RunLoopFileHandler aRunLoopPersistance(soilRunLoop);
 FileHandler *runLoopPersistance = &aRunLoopPersistance;
+FileHandler *handlers[4] = {
+  lightPersistance, 
+  pumpPersistance,
+  soilPersistance,
+  runLoopPersistance};
+PersistanceContainer container(handlers, 4);
 
 // Web Server Initialization
 ESP8266WebServer engine(80);
@@ -129,12 +135,6 @@ void setup() {
   WiFi.softAP("DevAP", "password");
 
   webServer.setupServer();
-
-  SPIFFS.begin();
-  lightPersistance->load();
-  pumpPersistance->load();
-  soilPersistance->load();
-  runLoopPersistance->load();
 }
 
 void loop() {
