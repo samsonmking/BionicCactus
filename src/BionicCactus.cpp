@@ -1,9 +1,8 @@
 #ifndef UNIT_TEST
 
 #include <Arduino.h>
-#include <string.h>
-#include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #include <DNSServer.h>
+
 #include <Clock.hpp>
 #include <NTP.hpp>
 #include <LEDLight.hpp>
@@ -18,6 +17,9 @@
 #include "persistance/PeriPumpFileHandler.hpp"
 #include "persistance/DFSoilFileHandler.hpp"
 #include "persistance/RunLoopFileHandler.hpp"
+#include "persistance/WifiFileHandler.hpp"
+
+#include "wifi/WifiController.hpp"
 
 #include "web/BCWebServer.hpp"
 #include "web/GetRequestHandler.hpp"
@@ -35,6 +37,7 @@
 #include "web/runloop/RunLoopPostRequestHandler.hpp"
 
 using namespace Persistance;
+using namespace Wireless;
 using namespace Web;
 
 // Constants
@@ -44,12 +47,6 @@ enum States { Looping, Priming };
 
 // Global Variables
 States state = Looping;
-bool initialWifiConfig = false;
-uint32 devIdNum = ESP.getChipId();
-unsigned long logStart;
-unsigned long logTime = 1000;
-
-WiFiClient wifiClient;
 
 NTP* ntp = NTP::getInstance();
 Clock clock(ntp, -5);
@@ -69,12 +66,20 @@ DFSoilFileHandler aSoilPersistance(dfSoil);
 FileHandler *soilPersistance = &aSoilPersistance;
 RunLoopFileHandler aRunLoopPersistance(soilRunLoop);
 FileHandler *runLoopPersistance = &aRunLoopPersistance;
-FileHandler *handlers[4] = {
+WifiFileHandler aWifiPersistance;
+FileHandler *wifiPersistance = &aWifiPersistance;
+
+const int NUM_PERSISTANCE = 5;
+FileHandler *handlers[NUM_PERSISTANCE] = {
   lightPersistance, 
   pumpPersistance,
   soilPersistance,
-  runLoopPersistance};
-PersistanceContainer container(handlers, 4);
+  runLoopPersistance,
+  wifiPersistance};
+PersistanceContainer container(handlers, sizeof(**handlers));
+
+// Wifi Initialization
+WifiController wifiController(aWifiPersistance);
 
 // Web Server Initialization
 ESP8266WebServer engine(80);
@@ -132,8 +137,6 @@ void setup() {
   pinMode(PIN_LED, OUTPUT);
   pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
-  WiFi.softAP("DevAP", "password");
-
   webServer.setupServer();
 }
 
@@ -159,9 +162,8 @@ void loop() {
   //     }
   //     break;
   // }
+  wifiController.loop();
   webServer.loop();
 }
-
-
 
 #endif
