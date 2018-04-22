@@ -71,13 +71,14 @@ FileHandler *runLoopPersistance = &aRunLoopPersistance;
 WifiFileHandler wifiSettings;
 FileHandler *wifiPersistance = &wifiSettings;
 
-FileHandler *handlers[5] = {
+const int numHandlers = 5;
+FileHandler *handlers[numHandlers] = {
   lightPersistance, 
   pumpPersistance,
   soilPersistance,
   runLoopPersistance,
   wifiPersistance};
-PersistanceContainer container(handlers, sizeof(**handlers));
+PersistanceContainer container(handlers, numHandlers);
 
 // Wifi Initialization
 WifiController wifiController(wifiSettings, clock);

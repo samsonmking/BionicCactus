@@ -5,7 +5,6 @@ using namespace Persistance;
 WifiFileHandler::WifiFileHandler() : _configured(false) {
     _password[0] = 0;
     _ssid[0] = 0;
-    SPIFFS.remove(_filePath);
 }
 
 void WifiFileHandler::load() {
