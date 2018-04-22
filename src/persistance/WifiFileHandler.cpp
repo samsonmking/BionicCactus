@@ -3,6 +3,9 @@
 using namespace Persistance;
 
 WifiFileHandler::WifiFileHandler() : _configured(false) {
+    _password[0] = 0;
+    _ssid[0] = 0;
+    SPIFFS.remove(_filePath);
 }
 
 void WifiFileHandler::load() {
@@ -33,6 +36,10 @@ void WifiFileHandler::save() {
 
 bool WifiFileHandler::isConfigured() {
     return _configured;
+}
+
+void WifiFileHandler::setConfigured(bool configured) {
+    _configured = configured;
 }
 
 const char *WifiFileHandler::getSSID() {

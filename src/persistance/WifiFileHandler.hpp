@@ -16,6 +16,7 @@ namespace Persistance {
             virtual void save() override;
             virtual void load() override;
             bool isConfigured();
+            void setConfigured(bool configured);
             const char *getSSID();
             void setSSID(const char *ssid);
             const char *getPassword();

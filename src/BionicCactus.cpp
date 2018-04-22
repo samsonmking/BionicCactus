@@ -35,6 +35,8 @@
 #include "web/soil/DFSoilPostRequestHandler.hpp"
 #include "web/runloop/RunLoopFormTemplate.hpp"
 #include "web/runloop/RunLoopPostRequestHandler.hpp"
+#include "web/wifi/WifiFormTemplate.hpp"
+#include "web/wifi/WifiPostRequestHandler.hpp"
 
 using namespace Persistance;
 using namespace Wireless;
@@ -66,11 +68,10 @@ DFSoilFileHandler aSoilPersistance(dfSoil);
 FileHandler *soilPersistance = &aSoilPersistance;
 RunLoopFileHandler aRunLoopPersistance(soilRunLoop);
 FileHandler *runLoopPersistance = &aRunLoopPersistance;
-WifiFileHandler aWifiPersistance;
-FileHandler *wifiPersistance = &aWifiPersistance;
+WifiFileHandler wifiSettings;
+FileHandler *wifiPersistance = &wifiSettings;
 
-const int NUM_PERSISTANCE = 5;
-FileHandler *handlers[NUM_PERSISTANCE] = {
+FileHandler *handlers[5] = {
   lightPersistance, 
   pumpPersistance,
   soilPersistance,
@@ -79,7 +80,7 @@ FileHandler *handlers[NUM_PERSISTANCE] = {
 PersistanceContainer container(handlers, sizeof(**handlers));
 
 // Wifi Initialization
-WifiController wifiController(aWifiPersistance);
+WifiController wifiController(wifiSettings, clock);
 
 // Web Server Initialization
 ESP8266WebServer engine(80);
@@ -113,6 +114,13 @@ SettingsFormTemplate *runLoopForm = &aRunLoopForm;
 ConfigPageGetRequestHandler getRunLoopConfig("/config/runloop", "Run Loop Configuration", header, runLoopForm);
 GetRequestHandler *runLoopGetRequest = &getRunLoopConfig;
 
+WifiPostRequestHandler aWifiPostRequest("/config/wifi/submit", wifiSettings);
+PostRequestHandler *wifiPostRequest = &aWifiPostRequest;
+WifiFormTemplate aWifiFormTemplate(wifiPostRequest->getURI(), wifiSettings);
+SettingsFormTemplate *wifiForm = &aWifiFormTemplate;
+ConfigPageGetRequestHandler getWifiSettings("/config/wifi", "WiFi Configuration", header, wifiForm);
+GetRequestHandler *wifiGetRequest = &getWifiSettings;
+
 IndexConnectedGetRequestHandler aGetIndexConnected(
 header, 
 lightGetRequest->getURI(), 
@@ -131,7 +139,10 @@ pumpGetRequest,
 soilPostRequest, 
 soilGetRequest,
 runLoopPostRequest,
-runLoopGetRequest);
+runLoopGetRequest,
+wifiPostRequest,
+wifiGetRequest,
+wifiSettings);
 
 void setup() {
   pinMode(PIN_LED, OUTPUT);

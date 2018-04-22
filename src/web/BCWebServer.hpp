@@ -6,8 +6,9 @@
 #include <web/ConfigPageGetRequestHandler.hpp>
 #include <web/SettingsFormTemplate.hpp>
 #include <web/PostRequestHandler.hpp>
+#include "persistance/WifiFileHandler.hpp"
 
-#include <Light.hpp>
+using namespace Persistance;
 
 class BCWebServer {
 public:
@@ -20,7 +21,10 @@ public:
         PostRequestHandler *soilPostRequest,
         GetRequestHandler *soilGetRequest,
         PostRequestHandler *runLoopPostRequest,
-        GetRequestHandler *runLoopGetRequest);
+        GetRequestHandler *runLoopGetRequest,
+        PostRequestHandler *wifiPostRequest,
+        GetRequestHandler *wifiGetRequest,
+        WifiFileHandler &wifiSettings);
     void setupServer();
     void loop();
 private:
@@ -36,6 +40,9 @@ private:
     GetRequestHandler *_soilGetRequest;
     PostRequestHandler *_runLoopPostRequest;
     GetRequestHandler *_runLoopGetRequest;
+    PostRequestHandler *_wifiPostRequest;
+    GetRequestHandler *_wifiGetRequest;
+    WifiFileHandler &_wifiSettings;
     void handleGet(GetRequestHandler *request);
     void handlePost(PostRequestHandler *request);
     void redirect(const char *uri);

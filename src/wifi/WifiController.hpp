@@ -3,6 +3,7 @@
 
 #include <ESP8266WiFi.h>
 #include "persistance/WifiFileHandler.hpp"
+#include "Clock.hpp"
 
 using namespace Persistance;
 
@@ -10,11 +11,7 @@ namespace Wireless {
 
     class WifiController {
         public:
-            WifiController(WifiFileHandler &persistance);
-            // bool isConnected();
-            // bool isConfigured();
-            // void StartAPMode();
-            // void StartClientMode();
+            WifiController(WifiFileHandler &persistance, Clock &clock);
             void loop();
         private:
             enum States {
@@ -22,10 +19,13 @@ namespace Wireless {
                 AP_CONNECTING,
                 AP_CONNECTED,
                 CLIENT_CONNECTING,
-                CLIENT_CONNECTED
+                CLIENT_CONNECTED,
+                DELAY
             };
             States _state;
             WifiFileHandler &_persistance;
+            Clock &_clock;
+            unsigned long _delayStart;
     };
 
 }
