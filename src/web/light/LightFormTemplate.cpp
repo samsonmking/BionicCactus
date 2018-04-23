@@ -1,4 +1,6 @@
-#include <web/light/LightFormTemplate.hpp>
+#include "web/light/LightFormTemplate.hpp"
+
+using namespace Web;
 
 LightFormTemplate::LightFormTemplate(const char *postUri, Light *light) : _postUri(postUri), _light(light) {
     

@@ -1,4 +1,6 @@
-#include <web/index/IndexConnectedGetRequestHandler.hpp>
+#include "web/index/IndexConnectedGetRequestHandler.hpp"
+
+using namespace Web;
 
 IndexConnectedGetRequestHandler::IndexConnectedGetRequestHandler(Header &header, 
 const char *lightUri, 

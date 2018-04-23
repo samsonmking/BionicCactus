@@ -1,4 +1,6 @@
-#include<web/pump/PeriPumpFormTemplate.hpp>
+#include "web/pump/PeriPumpFormTemplate.hpp"
+
+using namespace Web;
 
 PeriPumpFormTemplate::PeriPumpFormTemplate(const char *postUri, PeriPump &pump) :
 _postUri(postUri), _pump(pump) {

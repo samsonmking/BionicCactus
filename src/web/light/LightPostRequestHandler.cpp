@@ -1,4 +1,6 @@
-#include <web/light/LightPostRequestHandler.hpp>
+#include "web/light/LightPostRequestHandler.hpp"
+
+using namespace Web;
 
 LightPostRequestHandler::LightPostRequestHandler(const char *uri, Light *light, FileHandler *persistance) : 
 _uri(uri), _light(light), _persistance(persistance) {
