@@ -2,9 +2,11 @@
 #define SOIL_RUNLOOP_H
 
 #include <Arduino.h>
-#include <Pump.hpp>
+#include "sensors/pump/Pump.hpp"
 #include <SoilSensor.hpp>
 #include <Clock.hpp>
+
+using namespace Sensors::Pump;
 
 class SoilRunLoop {
 public:

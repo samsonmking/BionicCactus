@@ -6,7 +6,7 @@
 #include <Clock.hpp>
 #include <NTP.hpp>
 #include "sensors/light/LEDLight.hpp"
-#include <PeriPump.hpp>
+#include "sensors/pump/PeriPump.hpp"
 #include <mock/MockSoilSensor.hpp>
 #include <DFSoil.hpp>
 #include <SoilRunLoop.hpp>
@@ -39,6 +39,7 @@
 #include "web/wifi/WifiPostRequestHandler.hpp"
 
 using namespace Sensors::Light;
+using namespace Sensors::Pump;
 using namespace Persistance;
 using namespace Wireless;
 using namespace Web;

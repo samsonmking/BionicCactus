@@ -5,13 +5,14 @@
 #include <mock/MockTimeProvider.hpp>
 #include <Clock.hpp>
 #include "sensors/light/LEDLight.hpp"
-#include "sensors/light/mock/MockLight.hpp"
+#include "sensors/light/MockLight.hpp"
 #include <DFSoil.hpp>
 #include <mock/MockSoilSensor.hpp>
-#include <mock/MockPump.hpp>
+#include "sensors/pump/MockPump.hpp"
 #include <SoilRunLoop.hpp>
 
 using namespace Sensors::Light;
+using namespace Sensors::Pump;
 
 // Clock Tests
 void test_mock_provider() {

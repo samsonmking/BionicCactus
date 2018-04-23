@@ -2,12 +2,13 @@
 #define PERI_PUMP_FILE_HANDLER_H
 
 #include "persistance/FileHandler.hpp"
-#include "PeriPump.hpp"
+#include "sensors/pump/PeriPump.hpp"
 #include "ArduinoJson.h"
 #include "constants/PumpConstants.hpp"
 #include "FS.h"
 
 using namespace Constants;
+using namespace Sensors::Pump;
 
 class PeriPumpFileHandler : public FileHandler {
 public:

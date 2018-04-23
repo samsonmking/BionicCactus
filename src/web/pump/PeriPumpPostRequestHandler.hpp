@@ -3,11 +3,12 @@
 
 #include "web/PostRequestHandler.hpp"
 #include "constants/PumpConstants.hpp"
-#include "PeriPump.hpp"
-#include <Arduino.h>
+#include "sensors/pump/PeriPump.hpp"
 #include "persistance/FileHandler.hpp"
+#include <Arduino.h>
 
 using namespace Constants;
+using namespace Sensors::Pump;
 
 namespace Web {
 
