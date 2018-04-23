@@ -2,8 +2,10 @@
 #define LED_LIGHT_H
 
 #include "Light.hpp"
-#include "Clock.hpp"
+#include "time/Clock.hpp"
 #include <Arduino.h>
+
+using namespace Time;
 
 namespace Sensors {
   namespace Light {

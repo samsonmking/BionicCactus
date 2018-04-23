@@ -1,10 +1,10 @@
 #ifndef UNIT_TEST
 
 #include <Arduino.h>
-#include <DNSServer.h>
 
-#include <Clock.hpp>
-#include <NTP.hpp>
+#include "time/Clock.hpp"
+#include "time/NTP.hpp"
+
 #include "sensors/light/LEDLight.hpp"
 #include "sensors/pump/PeriPump.hpp"
 #include "sensors/soil/DFSoil.hpp"
@@ -37,6 +37,7 @@
 #include "web/wifi/WifiFormTemplate.hpp"
 #include "web/wifi/WifiPostRequestHandler.hpp"
 
+using namespace Time;
 using namespace Sensors::Light;
 using namespace Sensors::Pump;
 using namespace Sensors::Soil;
@@ -52,12 +53,16 @@ enum States { Looping, Priming };
 // Global Variables
 States state = Looping;
 
+// Time Initialization
 NTP* ntp = NTP::getInstance();
 Clock clock(ntp, -5);
+
+// Sensors Initialization
 PeriPump pump(clock, D7, D6, D8);
 LEDLight ledLight(clock, D1);
 Light *light = &ledLight;
 DFSoil dfSoil(A0);
+
 SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
 
 // File Persistance Initialization

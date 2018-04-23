@@ -1,4 +1,6 @@
-#include <NTP.hpp>
+#include "NTP.hpp"
+
+using namespace Time;
 
 NTP::NTP() {
 }

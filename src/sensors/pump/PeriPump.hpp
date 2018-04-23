@@ -2,8 +2,10 @@
 #define PERI_PUMP_H
 
 #include "Pump.hpp"
-#include "Clock.hpp"
+#include "time/Clock.hpp"
 #include <Arduino.h>
+
+using namespace Time;
 
 namespace Sensors{
   namespace Pump {

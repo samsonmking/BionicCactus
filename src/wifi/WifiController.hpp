@@ -3,9 +3,10 @@
 
 #include <ESP8266WiFi.h>
 #include "persistance/WifiFileHandler.hpp"
-#include "Clock.hpp"
+#include "time/Clock.hpp"
 
 using namespace Persistance;
+using namespace Time;
 
 namespace Wireless {
 

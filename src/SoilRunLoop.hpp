@@ -4,10 +4,11 @@
 #include <Arduino.h>
 #include "sensors/pump/Pump.hpp"
 #include "sensors/soil/SoilSensor.hpp"
-#include <Clock.hpp>
+#include "time/Clock.hpp"
 
 using namespace Sensors::Pump;
 using namespace Sensors::Soil;
+using namespace Time;
 
 class SoilRunLoop {
 public:
