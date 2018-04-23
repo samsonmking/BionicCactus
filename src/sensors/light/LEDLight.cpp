@@ -1,4 +1,6 @@
-#include <LEDLight.hpp>
+#include "LEDLight.hpp"
+
+using namespace Sensors::Light;
 
 LEDLight::LEDLight(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin), _brightness(100) {
   _lastOutput = 0;

@@ -2,8 +2,10 @@
 #define LIGHT_FORM_TEMPLATE_H
 
 #include "web/SettingsFormTemplate.hpp"
-#include "Light.hpp"
+#include "sensors/light/Light.hpp"
 #include <Arduino.h>
+
+using namespace Sensors::Light;
 
 namespace Web {
 

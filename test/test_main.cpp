@@ -4,12 +4,14 @@
 #include <unity.h>
 #include <mock/MockTimeProvider.hpp>
 #include <Clock.hpp>
-#include <LEDLight.hpp>
-#include <mock/MockLight.hpp>
+#include "sensors/light/LEDLight.hpp"
+#include "sensors/light/mock/MockLight.hpp"
 #include <DFSoil.hpp>
 #include <mock/MockSoilSensor.hpp>
 #include <mock/MockPump.hpp>
 #include <SoilRunLoop.hpp>
+
+using namespace Sensors::Light;
 
 // Clock Tests
 void test_mock_provider() {

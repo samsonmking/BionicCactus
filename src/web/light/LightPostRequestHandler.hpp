@@ -4,10 +4,11 @@
 #include "web/PostRequestHandler.hpp"
 #include "constants/LightConstants.hpp"
 #include "persistance/FileHandler.hpp"
-#include "Light.hpp"
+#include "sensors/light/Light.hpp"
 #include <Arduino.h>
 
 using namespace Constants;
+using namespace Sensors::Light;
 
 namespace Web {
 

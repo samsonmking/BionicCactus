@@ -5,7 +5,7 @@
 
 #include <Clock.hpp>
 #include <NTP.hpp>
-#include <LEDLight.hpp>
+#include "sensors/light/LEDLight.hpp"
 #include <PeriPump.hpp>
 #include <mock/MockSoilSensor.hpp>
 #include <DFSoil.hpp>
@@ -38,6 +38,7 @@
 #include "web/wifi/WifiFormTemplate.hpp"
 #include "web/wifi/WifiPostRequestHandler.hpp"
 
+using namespace Sensors::Light;
 using namespace Persistance;
 using namespace Wireless;
 using namespace Web;

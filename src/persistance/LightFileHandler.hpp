@@ -2,12 +2,13 @@
 #define LIGHT_FILE_HANDLER_H
 
 #include "persistance/FileHandler.hpp"
-#include "Light.hpp"
+#include "sensors/light/Light.hpp"
 #include "ArduinoJson.h"
 #include "constants/LightConstants.hpp"
 #include "FS.h"
 
 using namespace Constants;
+using namespace Sensors::Light;
 
 class LightFileHandler : public FileHandler {
 public:
