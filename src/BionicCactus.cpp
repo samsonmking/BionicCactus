@@ -8,7 +8,7 @@
 #include "sensors/light/LEDLight.hpp"
 #include "sensors/pump/PeriPump.hpp"
 #include "sensors/soil/DFSoil.hpp"
-#include <SoilRunLoop.hpp>
+#include "SoilRunLoop.hpp"
 
 #include "persistance/PersistanceContainer.hpp"
 #include "persistance/FileHandler.hpp"
@@ -44,14 +44,6 @@ using namespace Sensors::Soil;
 using namespace Persistance;
 using namespace Wireless;
 using namespace Web;
-
-// Constants
-const int PIN_LED = 2;
-const int WIFI_TRIGGER_PIN = D3;
-enum States { Looping, Priming };
-
-// Global Variables
-States state = Looping;
 
 // Time Initialization
 NTP* ntp = NTP::getInstance();
@@ -152,36 +144,18 @@ wifiGetRequest,
 wifiSettings);
 
 void setup() {
-  pinMode(PIN_LED, OUTPUT);
-  pinMode(WIFI_TRIGGER_PIN, INPUT_PULLUP);
   Serial.begin(115200);
   webServer.setupServer();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  // switch (state) {
-  //   case Looping:
-  //     if (digitalRead(WIFI_TRIGGER_PIN) == LOW) {
-  //       state = Priming;
-  //       return;
-  //     }
-  //     ledLight.loop();
-  //     dfSoil.loop();
-  //     pump.loop();
-  //     soilRunLoop.loop();
-  //     connectWifiIfConfigured();      
-  //     break;
-  //   case Priming:
-  //     pump.prime();
-  //     if (digitalRead(WIFI_TRIGGER_PIN) == HIGH) {
-  //       pump.stop();
-  //       state = Looping;
-  //     }
-  //     break;
-  // }
   wifiController.loop();
   webServer.loop();
+  // ledLight.loop();
+  // dfSoil.loop();
+  // pump.loop();
+  // soilRunLoop.loop();
+
 }
 
 #endif
