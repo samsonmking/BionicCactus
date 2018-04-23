@@ -1,10 +1,12 @@
 #ifndef PERI_PUMP_FORM_TEMPLATE_H
 #define PERI_PUMP_FORM_TEMPLATE_H
 
-#include <web/SettingsFormTemplate.hpp>
-#include <constants/PumpConstants.hpp>
-#include <PeriPump.hpp>
+#include "web/SettingsFormTemplate.hpp"
+#include "constants/PumpConstants.hpp"
+#include "PeriPump.hpp"
 #include <Arduino.h>
+
+using namespace Constants;
 
 class PeriPumpFormTemplate : public SettingsFormTemplate {
 public:
