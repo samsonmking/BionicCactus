@@ -1,4 +1,6 @@
-#include <LIDARBottle.hpp>
+#include "LIDARBottle.hpp"
+
+using namespace Sensors::Bottle;
 
 LidarBottle::LidarBottle(): 
 _lox(Adafruit_VL53L0X()), _a0(-47.3), _a1(3.54), _a2(-0.021) {
