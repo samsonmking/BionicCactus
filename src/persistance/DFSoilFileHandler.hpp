@@ -1,13 +1,14 @@
 #ifndef DFSOIL_FILE_HANDLER_H
 #define DFSOIL_FILE_HANDLER_H
 
-#include <persistance/FileHandler.hpp>
-#include <DFSoil.hpp>
-#include <ArduinoJson.h>
-#include <constants/DFSoilConstants.hpp>
-#include <FS.h>
+#include "FileHandler.hpp"
+#include "sensors/soil/DFSoil.hpp"
+#include "ArduinoJson.h"
+#include "constants/DFSoilConstants.hpp"
+#include "FS.h"
 
 using namespace Constants;
+using namespace Sensors::Soil;
 
 namespace Persistance {
 

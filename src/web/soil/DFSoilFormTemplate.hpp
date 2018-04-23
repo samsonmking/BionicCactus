@@ -3,10 +3,11 @@
 
 #include "web/SettingsFormTemplate.hpp"
 #include "constants/DFSoilConstants.hpp"
-#include "DFSoil.hpp"
+#include "sensors/soil/DFSoil.hpp"
 #include <Arduino.h>
 
 using namespace Constants;
+using namespace Sensors::Soil;
 
 namespace Web {
 

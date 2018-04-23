@@ -3,11 +3,12 @@
 
 #include "web/PostRequestHandler.hpp"
 #include "constants/DFSoilConstants.hpp"
-#include "DFSoil.hpp"
+#include "sensors/soil/DFSoil.hpp"
 #include <Arduino.h>
 #include "persistance/FileHandler.hpp"
 
 using namespace Constants;
+using namespace Sensors::Soil;
 
 namespace Web {
 

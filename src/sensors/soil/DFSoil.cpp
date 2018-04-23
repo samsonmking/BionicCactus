@@ -1,4 +1,6 @@
-#include <DFSoil.hpp>
+#include "DFSoil.hpp"
+
+using namespace Sensors::Soil;
 
 DFSoil::DFSoil(int pin, int high, int low) :
 _pin(pin), _high(high), _low(low), _samples(11) {

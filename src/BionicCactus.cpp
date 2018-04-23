@@ -7,8 +7,7 @@
 #include <NTP.hpp>
 #include "sensors/light/LEDLight.hpp"
 #include "sensors/pump/PeriPump.hpp"
-#include <mock/MockSoilSensor.hpp>
-#include <DFSoil.hpp>
+#include "sensors/soil/DFSoil.hpp"
 #include <SoilRunLoop.hpp>
 
 #include "persistance/PersistanceContainer.hpp"
@@ -40,6 +39,7 @@
 
 using namespace Sensors::Light;
 using namespace Sensors::Pump;
+using namespace Sensors::Soil;
 using namespace Persistance;
 using namespace Wireless;
 using namespace Web;
@@ -58,7 +58,6 @@ PeriPump pump(clock, D7, D6, D8);
 LEDLight ledLight(clock, D1);
 Light *light = &ledLight;
 DFSoil dfSoil(A0);
-//MockSoilSensor dfSoil(85);
 SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
 
 // File Persistance Initialization
