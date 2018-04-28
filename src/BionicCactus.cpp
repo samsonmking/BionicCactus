@@ -51,7 +51,7 @@ Clock clock(ntp, -5);
 
 // Sensors Initialization
 PeriPump pump(clock, D7, D6, D8);
-LEDLight ledLight(clock, D1);
+LEDLight ledLight(clock, D0);
 Light *light = &ledLight;
 DFSoil dfSoil(A0);
 
@@ -151,10 +151,9 @@ void setup() {
 void loop() {
   wifiController.loop();
   webServer.loop();
-  // ledLight.loop();
-  // dfSoil.loop();
-  // pump.loop();
-  // soilRunLoop.loop();
+  ledLight.loop();
+  pump.loop();
+  soilRunLoop.loop();
 
 }
 
