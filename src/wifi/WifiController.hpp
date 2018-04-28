@@ -14,6 +14,7 @@ namespace Wireless {
         public:
             WifiController(WifiFileHandler &persistance, Clock &clock);
             void loop();
+            bool isConnected();
         private:
             enum States {
                 DISCONNECTED,

@@ -7,6 +7,10 @@ _persistance(persistance), _clock(clock), _state(DISCONNECTED) {
 
 }
 
+bool WifiController::isConnected() {
+    return _state == CLIENT_CONNECTED;
+}
+
 void WifiController::loop() {
     switch(_state){
         case DISCONNECTED:
@@ -34,6 +38,7 @@ void WifiController::loop() {
             if (WiFi.waitForConnectResult() == WL_CONNECTED){
                 _state = CLIENT_CONNECTED;
             }
+            Serial.println(WiFi.localIP());
             break;
         case CLIENT_CONNECTED:
             if (WiFi.status() != WL_CONNECTED) {
