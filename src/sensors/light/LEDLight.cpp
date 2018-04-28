@@ -2,11 +2,14 @@
 
 using namespace Sensors::Light;
 
-LEDLight::LEDLight(Clock& clock, int lightPin): _clock(clock), _lightPin(lightPin), _brightness(100) {
-  _lastOutput = 0;
+LEDLight::LEDLight(Clock& clock, int lightPin): 
+_clock(clock), 
+_lightPin(lightPin), 
+_brightness(100),
+_timeOn{'0','9',':','0','0',':','0','0'},
+_timeOff{'1','7',':','0','0',':','0','0'},
+_lastOutput(0) {
   analogWrite(_lightPin, _lastOutput);
-  // setTimeOn("9:00:00");
-  // setTimeOff("17:00:00");
 }
 
 int LEDLight::getBrightness() {
