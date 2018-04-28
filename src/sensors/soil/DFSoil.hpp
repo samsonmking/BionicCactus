@@ -10,8 +10,7 @@ namespace Sensors {
 
     class DFSoil : public SoilSensor {
     public:
-      DFSoil(int pin, int high = 355, int low = 709);
-      void loop();
+      DFSoil(int pin);
       int getPercent();
       void setHigh(int high) {
         _high = high;
@@ -31,7 +30,6 @@ namespace Sensors {
       virtual int readPercent();
       int calculatePercent(int raw);
     private:
-      RunningMedian _samples;
       void calculateConstants();
       int _pin;
       int _high;

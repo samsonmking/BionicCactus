@@ -2,17 +2,17 @@
 
 using namespace Sensors::Soil;
 
-DFSoil::DFSoil(int pin, int high, int low) :
-_pin(pin), _high(high), _low(low), _samples(11) {
+DFSoil::DFSoil(int pin) :
+  _pin(pin),
+  _high(355),
+  _low(709),
+  _m(0),
+  _b(0) {
   calculateConstants();
 }
 
-void DFSoil::loop() {
-  _samples.add(readPercent());
-}
-
 int DFSoil::getPercent() {
-  return _samples.getMedian();
+  return readPercent();
 }
 
 int DFSoil::readRaw() {
