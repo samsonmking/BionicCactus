@@ -3,7 +3,9 @@
 #include <Arduino.h>
 
 #include "time/Clock.hpp"
-#include "time/NTP.hpp"
+#include "time/MockTimeProvider.hpp"
+#include <WiFiUdp.h>
+#include "time/NTPTimeProvider.hpp"
 
 #include "sensors/light/LEDLight.hpp"
 #include "sensors/pump/PeriPump.hpp"
@@ -46,16 +48,18 @@ using namespace Wireless;
 using namespace Web;
 
 // Time Initialization
-NTP* ntp = NTP::getInstance();
-Clock clock(ntp, -5);
+WiFiUDP ntpUDP;
+NTPTimeProvider ntpTime(ntpUDP);
+// MockTime mockTime(1000);
+Clock clock(ntpTime, -4);
 
 // Sensors Initialization
-PeriPump pump(clock, D7, D6, D8);
-LEDLight ledLight(clock, D0);
-Light *light = &ledLight;
-DFSoil dfSoil(A0);
+Sensors::Pump::PeriPump pump(clock, D7, D6, D8);
+Sensors::Light::LEDLight ledLight(clock, D0);
+Sensors::Light::Light *light = &ledLight;
+Sensors::Soil::DFSoil dfSoil(A0, clock);
 
-SoilRunLoop soilRunLoop(&pump, &dfSoil, clock);
+SoilRunLoop soilRunLoop(&pump, dfSoil, clock);
 
 // File Persistance Initialization
 LightFileHandler alightPersistance(light);
@@ -150,11 +154,17 @@ void setup() {
 
 void loop() {
   wifiController.loop();
-  webServer.loop();
+
+  if (wifiController.isConnected()) {
+    ntpTime.update();
+    webServer.loop();
+  }
+
   ledLight.loop();
   pump.loop();
+  dfSoil.loop();
   soilRunLoop.loop();
-
+  
 }
 
 #endif
