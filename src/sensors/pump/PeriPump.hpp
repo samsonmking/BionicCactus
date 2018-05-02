@@ -31,7 +31,7 @@ namespace Sensors{
       void runPump(int speed, Directions dir);
       void stop();
     private:
-      Clock _clock;
+      Clock &_clock;
       int _pinOut1;
       int _pinOut2;
       int _pinPWM;

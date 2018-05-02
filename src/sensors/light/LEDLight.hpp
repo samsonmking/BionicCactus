@@ -32,7 +32,7 @@ namespace Sensors {
       int _lightPin;
       int _brightness;
       int _lastOutput = 0;
-      Clock _clock;
+      Clock &_clock;
       char _timeOn[9];
       char _timeOff[9];
     };
