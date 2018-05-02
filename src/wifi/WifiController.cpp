@@ -4,7 +4,7 @@ using namespace Wireless;
 
 WifiController::WifiController(WifiFileHandler &persistance, Clock &clock) :
 _persistance(persistance), _clock(clock), _state(DISCONNECTED) {
-
+    WiFi.setAutoReconnect(false);
 }
 
 bool WifiController::isConnected() {
@@ -14,6 +14,7 @@ bool WifiController::isConnected() {
 void WifiController::loop() {
     switch(_state){
         case DISCONNECTED:
+            Serial.println("disconnected");
             if (_persistance.isConfigured()) {
                 _state = CLIENT_CONNECTING;
             } else {
@@ -34,6 +35,7 @@ void WifiController::loop() {
             break;
         case CLIENT_CONNECTING:
             WiFi.mode(WIFI_STA);
+            WiFi.hostname("bioniccactus");
             WiFi.begin(_persistance.getSSID(), _persistance.getPassword());
             if (WiFi.waitForConnectResult() == WL_CONNECTED){
                 _state = CLIENT_CONNECTED;
@@ -41,8 +43,9 @@ void WifiController::loop() {
             Serial.println(WiFi.localIP());
             break;
         case CLIENT_CONNECTED:
-            if (WiFi.status() != WL_CONNECTED) {
+            if (!WiFi.isConnected()) {
                 _state = CLIENT_CONNECTING;
+                Serial.println("wifi lost");
             }
             break;
         case DELAY:
