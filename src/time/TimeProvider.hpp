@@ -1,9 +1,9 @@
 #ifndef TIMEPROVIDER_H
 #define TIMEPROVIDER_H
 
-#include "TimeLib.h"
-
 namespace Time {
+
+  typedef unsigned long time_t;
 
   class TimeProvider {
   public:
