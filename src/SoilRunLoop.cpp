@@ -1,6 +1,24 @@
 #include <SoilRunLoop.hpp>
 
-SoilRunLoop::SoilRunLoop(Pump* pump, SoilSensor* sensor, Clock& clock) : _pump(pump), _sensor(sensor), _clock(clock), _state(Dispersing) {
+using namespace Time;
+using namespace Sensors::Pump;
+using namespace Sensors::Soil;
+
+SoilRunLoop::SoilRunLoop(Pump* pump, SoilSensor& sensor, Clock& clock) : 
+_pump(pump), 
+_sensor(sensor), 
+_clock(clock), 
+_state(Dispersing),
+_setPoint{85},
+_tolerance{1},
+_maxDispense{50},
+_mlPerPercent{4},
+_disperseTime{200000},
+_disperseStarted{0},
+_timeAtMoisture{43200000},
+_moistureStarted{0},
+_timeAtDry{43200000},
+_dryStarted{0} {
   _disperseStarted = _clock.getMillis();
 }
 
@@ -28,7 +46,8 @@ void SoilRunLoop::checkMoisture() {
     _state = Drying;
     return;
   }
-  int current = _sensor->getPercent();
+
+  int current = _sensor.getPercent();
   int diff = _setPoint - current;
   if (diff > _tolerance) {
     int vol = _mlPerPercent * diff;
@@ -53,6 +72,7 @@ void SoilRunLoop::dispersing() {
   unsigned long now = _clock.getMillis();
   if ((now - _disperseStarted) >= _disperseTime) {
     _state = CheckMoisture;
+    Serial.println("check moisture");
   }
 }
 

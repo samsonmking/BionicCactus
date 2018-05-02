@@ -6,13 +6,9 @@
 #include "sensors/soil/SoilSensor.hpp"
 #include "time/Clock.hpp"
 
-using namespace Sensors::Pump;
-using namespace Sensors::Soil;
-using namespace Time;
-
 class SoilRunLoop {
 public:
-  SoilRunLoop(Pump* pump, SoilSensor* sensor, Clock& clock);
+  SoilRunLoop(Sensors::Pump::Pump* pump, Sensors::Soil::SoilSensor& sensor, Time::Clock& clock);
   enum States { Dispersing, Pumping, CheckMoisture, Drying };
   States getState() {
     return _state;
@@ -62,20 +58,20 @@ public:
   void loop();
 private:
   States _state;
-  Pump* _pump;
-  SoilSensor* _sensor;
-  Clock _clock;
-  int _setPoint = 85;
-  int _tolerance = 1;
-  int _maxDispense = 50;
-  float _mlPerPercent = 4;
+  Sensors::Pump::Pump* _pump;
+  Sensors::Soil::SoilSensor& _sensor;
+  Time::Clock& _clock;
+  int _setPoint;
+  int _tolerance; 
+  int _maxDispense;
+  float _mlPerPercent;
   const static unsigned long MILLISPERHOUR = 3600000;
   const static unsigned long MILLISPERMIN = 60000;
-  unsigned long _disperseTime = 200000;
+  unsigned long _disperseTime;
   unsigned long _disperseStarted;
-  unsigned long _timeAtMoisture = 43200000;
+  unsigned long _timeAtMoisture;
   unsigned long _moistureStarted;
-  unsigned long _timeAtDry = 43200000;
+  unsigned long _timeAtDry;
   unsigned long _dryStarted;
   void checkMoisture();
   void pumping();
