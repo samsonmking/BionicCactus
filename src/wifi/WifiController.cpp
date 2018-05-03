@@ -4,7 +4,7 @@ using namespace Wireless;
 
 WifiController::WifiController(WifiFileHandler &persistance, Clock &clock) :
 _persistance(persistance), _clock(clock), _state(DISCONNECTED) {
-    WiFi.setAutoReconnect(false);
+    WiFi.setAutoReconnect(true);
 }
 
 bool WifiController::isConnected() {
@@ -43,10 +43,6 @@ void WifiController::loop() {
             Serial.println(WiFi.localIP());
             break;
         case CLIENT_CONNECTED:
-            if (!WiFi.isConnected()) {
-                _state = CLIENT_CONNECTING;
-                Serial.println("wifi lost");
-            }
             break;
         case DELAY:
             if (_clock.getMillis() - _delayStart < 5000) {
