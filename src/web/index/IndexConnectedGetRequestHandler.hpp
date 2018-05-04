@@ -4,12 +4,18 @@
 #include <Arduino.h>
 #include "web/GetRequestHandler.hpp"
 #include "web/Header.hpp"
+#include "IndexDashboard.hpp"
 
 namespace Web {
 
     class IndexConnectedGetRequestHandler : public GetRequestHandler {
     public:
-        IndexConnectedGetRequestHandler(Header &header, const char *lightUri, const char *pumpUri, const char *soilUri, const char *runLoopUri);
+        IndexConnectedGetRequestHandler(Header &header, 
+        const char *lightUri, 
+        const char *pumpUri, 
+        const char *soilUri, 
+        const char *runLoopUri, 
+        IndexDashboard& dashboard);
         inline virtual const char *getURI() override {
                 return "/";
         };
@@ -20,6 +26,7 @@ namespace Web {
         const char *_pumpUri;
         const char *_soilUri;
         const char *_runLoopUri;
+        IndexDashboard& _dashboard;
     };
 
 }

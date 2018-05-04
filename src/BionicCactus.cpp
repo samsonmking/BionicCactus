@@ -34,10 +34,12 @@
 #include "web/pump/PeriPumpPostRequestHandler.hpp"
 #include "web/soil/DFSoilFormTemplate.hpp"
 #include "web/soil/DFSoilPostRequestHandler.hpp"
+#include "web/soil/SoilDashboardTemplate.hpp"
 #include "web/runloop/RunLoopFormTemplate.hpp"
 #include "web/runloop/RunLoopPostRequestHandler.hpp"
 #include "web/wifi/WifiFormTemplate.hpp"
 #include "web/wifi/WifiPostRequestHandler.hpp"
+#include "web/index/IndexDashboard.hpp"
 
 using namespace Time;
 using namespace Sensors::Light;
@@ -124,12 +126,22 @@ SettingsFormTemplate *wifiForm = &aWifiFormTemplate;
 ConfigPageGetRequestHandler getWifiSettings("/config/wifi", "WiFi Configuration", header, wifiForm);
 GetRequestHandler *wifiGetRequest = &getWifiSettings;
 
+SoilDashboardTemplate soilDashboard(dfSoil);
+
+static const int numDashboards = 1;
+ValuesDashboardTemplate *dashboards[numDashboards] = {
+  &soilDashboard
+};
+
+IndexDashboard indexDashboard(dashboards, numDashboards);
+
 IndexConnectedGetRequestHandler aGetIndexConnected(
 header, 
 lightGetRequest->getURI(), 
 pumpGetRequest->getURI(), 
 soilGetRequest->getURI(),
-runLoopGetRequest->getURI());
+runLoopGetRequest->getURI(),
+indexDashboard);
 GetRequestHandler *getIndexConnected = &aGetIndexConnected;
 
 BCWebServer webServer(
