@@ -10,11 +10,13 @@
 #include "sensors/soil/MockSoilSensor.hpp"
 #include "sensors/pump/MockPump.hpp"
 #include "SoilRunLoop.hpp"
+#include "email/SMTPUtils.hpp"
 
 using namespace Sensors::Light;
 using namespace Sensors::Pump;
 using namespace Sensors::Soil;
 using namespace Time;
+using namespace Email;
 
 // Clock Tests
 void test_mock_provider() {
@@ -180,6 +182,19 @@ void test_full_cycle() {
   TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
 }
 
+// Email Tests
+void test_email_status_code() {
+  const char* example_reply_with_code = "220 smtp.example.com ESMTP Postfix";
+  int good_code = getStatusCodeFromReply(example_reply_with_code);
+  TEST_ASSERT_EQUAL(220, good_code);
+  const char* example_reply_no_code = "no code here";
+  int bad_code = getStatusCodeFromReply(example_reply_no_code))
+  TEST_ASSERT_EQUAL(-1, bad_code);
+  const char* too_short = "22";
+  int short_code = getStatusCodeFromReply(too_short);
+  TEST_ASSERT_EQUAL(-1, short_code);
+}
+
 void setup() {
     delay(2000);
 
@@ -204,6 +219,9 @@ void setup() {
     // SoilRunLoop Tests
     RUN_TEST(test_pump_vol);
     RUN_TEST(test_full_cycle);
+
+    // Email Tests
+    RUN_TEST(test_email_status_code);
 
     UNITY_END();
 }

@@ -24,7 +24,9 @@ public:
         GetRequestHandler *runLoopGetRequest,
         PostRequestHandler *wifiPostRequest,
         GetRequestHandler *wifiGetRequest,
-        WifiFileHandler &wifiSettings);
+        WifiFileHandler &wifiSettings,
+        PostRequestHandler *emailPostRequest,
+        GetRequestHandler *emailGetRequest);
     void setupServer();
     void loop();
 private:
@@ -43,6 +45,8 @@ private:
     PostRequestHandler *_wifiPostRequest;
     GetRequestHandler *_wifiGetRequest;
     WifiFileHandler &_wifiSettings;
+    PostRequestHandler *_emailPostRequest;
+    GetRequestHandler *_emailGetRequest;
     void handleGet(GetRequestHandler *request);
     void handlePost(PostRequestHandler *request);
     void redirect(const char *uri);

@@ -11,6 +11,7 @@
 #include "sensors/pump/PeriPump.hpp"
 #include "sensors/soil/DFSoil.hpp"
 #include "SoilRunLoop.hpp"
+#include "sensors/bottle/LIDARBottle.hpp"
 
 #include "persistance/PersistanceContainer.hpp"
 #include "persistance/FileHandler.hpp"
@@ -19,6 +20,7 @@
 #include "persistance/DFSoilFileHandler.hpp"
 #include "persistance/RunLoopFileHandler.hpp"
 #include "persistance/WifiFileHandler.hpp"
+#include "persistance/EmailFileHandler.hpp"
 
 #include "wifi/WifiController.hpp"
 
@@ -40,6 +42,11 @@
 #include "web/wifi/WifiFormTemplate.hpp"
 #include "web/wifi/WifiPostRequestHandler.hpp"
 #include "web/index/IndexDashboard.hpp"
+#include "web/email/EmailFormTemplate.hpp"
+#include "web/email/EmailPostRequestHandler.hpp"
+
+#include "email/EmailClient.hpp"
+#include "email/LIDAREmailNotifier.hpp"
 
 using namespace Time;
 using namespace Sensors::Light;
@@ -48,6 +55,7 @@ using namespace Sensors::Soil;
 using namespace Persistance;
 using namespace Wireless;
 using namespace Web;
+using namespace Email;
 
 // Time Initialization
 WiFiUDP ntpUDP;
@@ -60,6 +68,7 @@ Sensors::Pump::PeriPump pump(clock, D7, D6, D8);
 Sensors::Light::LEDLight ledLight(clock, D0);
 Sensors::Light::Light *light = &ledLight;
 Sensors::Soil::DFSoil dfSoil(A0, clock);
+Sensors::Bottle::LidarBottle bottle;
 
 SoilRunLoop soilRunLoop(&pump, dfSoil, clock);
 
@@ -74,14 +83,17 @@ RunLoopFileHandler aRunLoopPersistance(soilRunLoop);
 FileHandler *runLoopPersistance = &aRunLoopPersistance;
 WifiFileHandler wifiSettings;
 FileHandler *wifiPersistance = &wifiSettings;
+EmailFileHandler emailSettings;
+FileHandler *emailPersistance = &emailSettings;
 
-const int numHandlers = 5;
+const int numHandlers = 6;
 FileHandler *handlers[numHandlers] = {
   lightPersistance, 
   pumpPersistance,
   soilPersistance,
   runLoopPersistance,
-  wifiPersistance};
+  wifiPersistance,
+  emailPersistance };
 PersistanceContainer container(handlers, numHandlers);
 
 // Wifi Initialization
@@ -126,7 +138,15 @@ SettingsFormTemplate *wifiForm = &aWifiFormTemplate;
 ConfigPageGetRequestHandler getWifiSettings("/config/wifi", "WiFi Configuration", header, wifiForm);
 GetRequestHandler *wifiGetRequest = &getWifiSettings;
 
+EmailPostRequestHandler anEmailPostRequest("/config/email/submit", emailSettings);
+PostRequestHandler* emailPostRequest = &anEmailPostRequest;
+EmailFormTemplate anEmailForm(emailPostRequest->getURI(), emailSettings.getConfig());
+SettingsFormTemplate* emailForm = &anEmailForm;
+ConfigPageGetRequestHandler getEmailSettings("/config/email", "Email Notification Configuration", header, emailForm);
+GetRequestHandler *emailGetRequest = &getEmailSettings;
+
 SoilDashboardTemplate soilDashboard(dfSoil);
+
 
 static const int numDashboards = 1;
 ValuesDashboardTemplate *dashboards[numDashboards] = {
@@ -141,6 +161,7 @@ lightGetRequest->getURI(),
 pumpGetRequest->getURI(), 
 soilGetRequest->getURI(),
 runLoopGetRequest->getURI(),
+emailGetRequest->getURI(),
 indexDashboard);
 GetRequestHandler *getIndexConnected = &aGetIndexConnected;
 
@@ -157,7 +178,12 @@ runLoopPostRequest,
 runLoopGetRequest,
 wifiPostRequest,
 wifiGetRequest,
-wifiSettings);
+wifiSettings,
+emailPostRequest,
+emailGetRequest);
+
+// Email Initialization
+LIDAREmailNotifier bottleEmail(clock, bottle, emailSettings.getConfig());
 
 void setup() {
   Serial.begin(115200);
@@ -170,13 +196,14 @@ void loop() {
   if (wifiController.isConnected()) {
     ntpTime.update();
     webServer.loop();
+    bottleEmail.loop();
   }
 
   ledLight.loop();
   pump.loop();
   dfSoil.loop();
   soilRunLoop.loop();
-  
+  bottle.loop();
 }
 
 #endif

@@ -7,12 +7,14 @@ const char *lightUri,
 const char *pumpUri, 
 const char *soilUri,
 const char *runLoopUri,
+const char *emailUri,
 IndexDashboard& dashboard) : 
 _header(header),
 _lightUri(lightUri),
 _pumpUri(pumpUri),
 _soilUri(soilUri),
 _runLoopUri(runLoopUri),
+_emailUri(emailUri),
 _dashboard(dashboard) {
 
 }
@@ -31,5 +33,6 @@ void IndexConnectedGetRequestHandler::getHTML(char *out, size_t len) {
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Pump</a></li>)", _pumpUri);
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Soil</a></li>)", _soilUri);
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">RunLoop</a></li>)", _runLoopUri);
+    pos += snprintf(pos, end - pos, R"(<li><a href="%s">Email Notifications</a></li>)", _emailUri);
     pos += snprintf(pos, end - pos, R"(</ul></body></html>)");
 }

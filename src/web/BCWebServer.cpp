@@ -12,7 +12,9 @@ PostRequestHandler *runLoopPostRequest,
 GetRequestHandler *runLoopGetRequest,
 PostRequestHandler *wifiPostRequest,
 GetRequestHandler *wifiGetRequest,
-WifiFileHandler &wifiSettings) : 
+WifiFileHandler &wifiSettings,
+PostRequestHandler *emailPostRequest,
+GetRequestHandler *emailGetRequest) : 
 _ws(ws),
 _getIndex(indexGetRequest),
 _postLightConfig(lightPostRequest),
@@ -25,7 +27,9 @@ _runLoopPostRequest(runLoopPostRequest),
 _runLoopGetRequest(runLoopGetRequest),
 _wifiPostRequest(wifiPostRequest),
 _wifiGetRequest(wifiGetRequest),
-_wifiSettings(wifiSettings) {
+_wifiSettings(wifiSettings),
+_emailPostRequest(emailPostRequest),
+_emailGetRequest(emailGetRequest) {
     resetBuffer();
 }
 
@@ -83,6 +87,15 @@ void BCWebServer::setupServer() {
     _ws->on(_runLoopGetRequest->getURI(), [this]() {
         resetBuffer();
         handleGet(_runLoopGetRequest);
+    });
+    _ws->on(_emailPostRequest->getURI(), [this]() {
+        resetBuffer();
+        handlePost(_emailPostRequest);
+        redirect(_emailGetRequest->getURI());
+    });
+    _ws->on(_emailGetRequest->getURI(), [this]() {
+        resetBuffer();
+        handleGet(_emailGetRequest);
     });
     _ws->begin();
 }
