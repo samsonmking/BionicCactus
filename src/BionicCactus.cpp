@@ -44,6 +44,7 @@
 #include "web/index/IndexDashboard.hpp"
 #include "web/email/EmailFormTemplate.hpp"
 #include "web/email/EmailPostRequestHandler.hpp"
+#include "web/bottle/BottleDashboardTemplate.hpp"
 
 #include "email/EmailClient.hpp"
 #include "email/LIDAREmailNotifier.hpp"
@@ -146,11 +147,13 @@ ConfigPageGetRequestHandler getEmailSettings("/config/email", "Email Notificatio
 GetRequestHandler *emailGetRequest = &getEmailSettings;
 
 SoilDashboardTemplate soilDashboard(dfSoil);
+BottleDashboardTemplate bottleDashboard(bottle);
 
 
-static const int numDashboards = 1;
+static const int numDashboards = 2;
 ValuesDashboardTemplate *dashboards[numDashboards] = {
-  &soilDashboard
+  &soilDashboard,
+  &bottleDashboard
 };
 
 IndexDashboard indexDashboard(dashboards, numDashboards);
@@ -186,8 +189,9 @@ emailGetRequest);
 LIDAREmailNotifier bottleEmail(clock, bottle, emailSettings.getConfig());
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   webServer.setupServer();
+  bottle.setup();
 }
 
 void loop() {
@@ -204,6 +208,7 @@ void loop() {
   dfSoil.loop();
   soilRunLoop.loop();
   bottle.loop();
+
 }
 
 #endif
