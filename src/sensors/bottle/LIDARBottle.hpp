@@ -12,6 +12,7 @@ namespace Sensors {
             LidarBottle();
             int getPercent();
             void loop();
+            void setup();
             void setA0(float a0) {
                 _a0 = a0;
             };
@@ -37,6 +38,11 @@ namespace Sensors {
             float _a0;
             float _a1;
             float _a2;
+            int _failCount;
+            int _resetPin;
+            int _lowerBound;
+            int _upperBound;
+            void resetSensor();
         };
         
     }

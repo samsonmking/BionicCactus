@@ -3,15 +3,37 @@
 using namespace Sensors::Bottle;
 
 LidarBottle::LidarBottle(): 
-_lox(Adafruit_VL53L0X()), _a0{-47.3}, _a1{3.54}, _a2{-0.021}, _buffer(CircularBuffer<int, 200>()) {
+_lox(Adafruit_VL53L0X()), 
+_a0{-47.3}, 
+_a1{3.54}, 
+_a2{-0.021}, 
+_buffer(CircularBuffer<int, 200>()), 
+_failCount(0),
+_resetPin(D5),
+_lowerBound(50),
+_upperBound(250) {
+    
+}
+
+void LidarBottle::setup() {
     _lox.begin();
+    pinMode(_resetPin, OUTPUT);
+    digitalWrite(_resetPin, HIGH);
 }
 
 void LidarBottle::loop() {
     VL53L0X_RangingMeasurementData_t measure;
     _lox.rangingTest(&measure, false);
-    if (measure.RangeStatus != 4) {
-        _buffer.push(measure.RangeMilliMeter);
+    uint16_t mm = measure.RangeMilliMeter;
+    if (measure.RangeStatus != 0 || mm < _lowerBound || mm > _upperBound) {
+        _failCount++;
+    } else {
+        _buffer.push(mm);
+    }
+
+    if(_failCount > 200) {
+        resetSensor();
+        _failCount = 0;
     }
 }
 
@@ -35,4 +57,11 @@ int LidarBottle::calculatePercent(int mm) {
         return 0;
     }
     return percent;
+}
+
+void LidarBottle::resetSensor() {
+    digitalWrite(_resetPin, LOW);
+    delay(10);
+    digitalWrite(_resetPin, HIGH);
+    _lox.begin();
 }
