@@ -18,7 +18,7 @@ namespace Email {
     void LIDAREmailNotifier::loop() {
         if(!_config.configured) return;
         if(_bottle.getPercent() > _warnLevel) return;
-        if((_clock.getMillis() - _lastNotified) < 5000) return;
+        if((_clock.getMillis() - _lastNotified) < (_config.interval * (unsigned long)3600000)) return;
         if(sendNotification()) {
             _lastNotified = _clock.getMillis();
         }
