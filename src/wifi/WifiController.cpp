@@ -1,9 +1,10 @@
 #include "wifi/WifiController.hpp"
 
+using namespace Time;
 using namespace Wireless;
 
-WifiController::WifiController(WifiFileHandler &persistance, Clock &clock) :
-_persistance(persistance), _clock(clock), _state(DISCONNECTED) {
+WifiController::WifiController(WifiFileHandler &persistance, MillisProvider& millisProvider) :
+_persistance(persistance), _timer(millisProvider, 5, Units::SECONDS), _state(DISCONNECTED) {
     WiFi.setAutoReconnect(true);
 }
 
@@ -30,7 +31,7 @@ void WifiController::loop() {
         case AP_CONNECTED:
             if (_persistance.isConfigured()) {
                 _state = DELAY;
-                _delayStart = _clock.getMillis();
+                _timer.reset();
             }
             break;
         case CLIENT_CONNECTING:
@@ -45,7 +46,7 @@ void WifiController::loop() {
         case CLIENT_CONNECTED:
             break;
         case DELAY:
-            if (_clock.getMillis() - _delayStart < 5000) {
+            if (!_timer.isExpired()) {
                 return;
             }
             if (_persistance.isConfigured()) {

@@ -14,7 +14,6 @@ namespace Time {
         public:
             NTPTimeProvider(UDP& udp);
             virtual time_t getCurrentTime() override;
-            virtual unsigned long getMillis() override;
             bool update();
             bool forceUpdate();
         private:

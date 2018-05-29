@@ -4,8 +4,12 @@ using namespace Time;
 
 namespace Email {
 
-    EmailClient::EmailClient(Clock& clock, const char* server, int port, const char* username, const char* password) :
-    _clock(clock), _server(server), _port(port), _username(username), _password(password) {
+    EmailClient::EmailClient(MillisProvider& millisProvider, const char* server, int port, const char* username, const char* password) :
+    _timer(millisProvider, 5, Units::SECONDS), 
+    _server(server), 
+    _port(port), 
+    _username(username), 
+    _password(password) {
 
     }
 
@@ -51,9 +55,9 @@ namespace Email {
     }
 
     int EmailClient::getReplyCode(WiFiClient& client) {
-        unsigned long started = _clock.getMillis();
+        _timer.reset();
         while(client.available() == 0) {
-            if ((_clock.getMillis() - started) > 5000) {
+            if (_timer.isExpired()) {
                 return -1;
             }
         }

@@ -15,9 +15,6 @@ namespace Time {
     }
     time_t currentTime;
     unsigned long millis;
-    virtual unsigned long getMillis() {
-      return millis;
-    }
   };
 
 }

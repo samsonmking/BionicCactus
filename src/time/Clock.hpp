@@ -9,9 +9,6 @@ namespace Time {
   class Clock {
   public:
     Clock(TimeProvider& timeProvider, int timeZone);
-    unsigned long getMillis() {
-      return _timeProvider.getMillis();
-    };
     bool isAtOrPastTime(const char* timeChr);
     Time::time_t getTimeFromChr(char* input);
     Time::time_t getCurrentTime();

@@ -4,22 +4,20 @@ using namespace Time;
 using namespace Sensors::Pump;
 using namespace Sensors::Soil;
 
-SoilRunLoop::SoilRunLoop(Pump* pump, SoilSensor& sensor, Clock& clock) : 
+SoilRunLoop::SoilRunLoop(Pump* pump, SoilSensor& sensor, MillisProvider& millisProvider) : 
 _pump(pump), 
 _sensor(sensor), 
-_clock(clock), 
+_cycleTimer(millisProvider, 0, Units::SECONDS), 
+_dispersionTimer(millisProvider, 5, Units::MINUTES),
 _state(Dispersing),
 _setPoint{85},
 _tolerance{1},
 _maxDispense{50},
 _mlPerPercent{4},
-_disperseTime{200000},
-_disperseStarted{0},
-_timeAtMoisture{43200000},
-_moistureStarted{0},
-_timeAtDry{43200000},
-_dryStarted{0} {
-  _disperseStarted = _clock.getMillis();
+_disperseTime{5},
+_timeAtMoisture{8},
+_timeAtDry{16} {
+  enterDispersing();
 }
 
 void SoilRunLoop::loop() {
@@ -39,11 +37,14 @@ void SoilRunLoop::loop() {
   }
 }
 
+void SoilRunLoop::enterCheckMoisture() {
+  _cycleTimer.reset(_timeAtMoisture, Units::HOURS);
+  _state = CheckMoisture;
+}
+
 void SoilRunLoop::checkMoisture() {
-  unsigned long now = _clock.getMillis();
-  if ((now - _moistureStarted) >=_timeAtMoisture) {
-    _dryStarted = now;
-    _state = Drying;
+  if (_cycleTimer.isExpired()) {
+    enterDrying();
     return;
   }
 
@@ -55,31 +56,41 @@ void SoilRunLoop::checkMoisture() {
       vol = _maxDispense;
     }
     Serial.println(vol);
+    enterPumping(vol);
+  }
+}
+
+void SoilRunLoop::enterPumping(int vol) {
     _pump->setVolume(vol);
     _state = Pumping;
-  }
 }
 
 void SoilRunLoop::pumping() {
   if (_pump->dispenseDone()) {
-    _disperseStarted = _clock.getMillis();
-    _state = Dispersing;
+    enterDispersing();
     Serial.println("pump done");
   }
 }
 
+void SoilRunLoop::enterDispersing() {
+  _dispersionTimer.reset(_disperseTime, Units::MINUTES);
+  _state = Dispersing;
+}
+
 void SoilRunLoop::dispersing() {
-  unsigned long now = _clock.getMillis();
-  if ((now - _disperseStarted) >= _disperseTime) {
-    _state = CheckMoisture;
+  if (_dispersionTimer.isExpired()) {
+    enterCheckMoisture();
     Serial.println("check moisture");
   }
 }
 
+void SoilRunLoop::enterDrying() {
+  _cycleTimer.reset(_timeAtDry, Units::HOURS);
+  _state = Drying;
+}
+
 void SoilRunLoop::drying() {
-  unsigned long now = _clock.getMillis();
-  if ((now - _dryStarted) >= _timeAtDry) {
-    _moistureStarted = now;
-    _state = CheckMoisture;
+  if (_cycleTimer.isExpired()) {
+    enterCheckMoisture();
   }
 }

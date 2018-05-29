@@ -3,16 +3,16 @@
 
 #include <ESP8266WiFi.h>
 #include "persistance/WifiFileHandler.hpp"
-#include "time/Clock.hpp"
+#include "time/MillisProvider.hpp"
+#include "time/Timer.hpp"
 
 using namespace Persistance;
-using namespace Time;
 
 namespace Wireless {
 
     class WifiController {
         public:
-            WifiController(WifiFileHandler &persistance, Clock &clock);
+            WifiController(WifiFileHandler &persistance, Time::MillisProvider& millisProvider);
             void loop();
             bool isConnected();
         private:
@@ -26,8 +26,7 @@ namespace Wireless {
             };
             States _state;
             WifiFileHandler &_persistance;
-            Clock &_clock;
-            unsigned long _delayStart;
+            Time::Timer _timer;
     };
 
 }

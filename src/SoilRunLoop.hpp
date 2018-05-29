@@ -4,11 +4,12 @@
 #include <Arduino.h>
 #include "sensors/pump/Pump.hpp"
 #include "sensors/soil/SoilSensor.hpp"
-#include "time/Clock.hpp"
+#include "time/MillisProvider.hpp"
+#include "time/Timer.hpp"
 
 class SoilRunLoop {
 public:
-  SoilRunLoop(Sensors::Pump::Pump* pump, Sensors::Soil::SoilSensor& sensor, Time::Clock& clock);
+  SoilRunLoop(Sensors::Pump::Pump* pump, Sensors::Soil::SoilSensor& sensor, Time::MillisProvider& millisProvider);
   enum States { Dispersing, Pumping, CheckMoisture, Drying };
   States getState() {
     return _state;
@@ -38,44 +39,44 @@ public:
     return _mlPerPercent;
   }
   void setHrsAtMoisture(int hrs) {
-    _timeAtMoisture = MILLISPERHOUR * (unsigned long)hrs;
+    _timeAtMoisture = (unsigned long)hrs;
   };
   int getHrsAtMoisture() {
-    return _timeAtMoisture / MILLISPERHOUR;
+    return _timeAtMoisture;
   }
   void setHrsDry(int hrs) {
-    _timeAtDry = MILLISPERHOUR * (unsigned long)hrs;
+    _timeAtDry = (unsigned long)hrs;
   };
   int getHrsDry() {
-    return _timeAtDry / MILLISPERHOUR;
+    return _timeAtDry;
   }
   void setDispersionMin(int min) {
-    _disperseTime = MILLISPERMIN * (unsigned long)min;
+    _disperseTime = (unsigned long)min;
   }
   int getDispersionMin() {
-    return _disperseTime / MILLISPERMIN;
+    return _disperseTime;
   }
   void loop();
 private:
   States _state;
   Sensors::Pump::Pump* _pump;
   Sensors::Soil::SoilSensor& _sensor;
-  Time::Clock& _clock;
+  Time::Timer _cycleTimer;
+  Time::Timer _dispersionTimer;
   int _setPoint;
   int _tolerance; 
   int _maxDispense;
   float _mlPerPercent;
-  const static unsigned long MILLISPERHOUR = 3600000;
-  const static unsigned long MILLISPERMIN = 60000;
   unsigned long _disperseTime;
-  unsigned long _disperseStarted;
   unsigned long _timeAtMoisture;
-  unsigned long _moistureStarted;
   unsigned long _timeAtDry;
-  unsigned long _dryStarted;
+  void enterCheckMoisture();
   void checkMoisture();
+  void enterPumping(int vol);
   void pumping();
+  void enterDispersing();
   void dispersing();
+  void enterDrying();
   void drying();
 };
 

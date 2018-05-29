@@ -3,7 +3,8 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include "time/Clock.hpp"
+#include "time/MillisProvider.hpp"
+#include "time/Timer.hpp"
 #include "SMTPUtils.hpp"
 
 namespace Email {
@@ -17,10 +18,10 @@ namespace Email {
 
     class EmailClient {
         public:
-            EmailClient(Time::Clock& clock, const char* server, int port, const char* username, const char* password);
+            EmailClient(Time::MillisProvider& millisProvier, const char* server, int port, const char* username, const char* password);
             bool send(Message message);
         private:
-            Time::Clock& _clock;
+            Time::Timer _timer;
             const char* _server;
             int _port;
             const char* _username;

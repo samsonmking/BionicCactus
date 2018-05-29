@@ -4,7 +4,8 @@
 #include "SoilSensor.hpp"
 #include "RunningMedian.h"
 #include <Arduino.h>
-#include "time/Clock.hpp"
+#include "time/MillisProvider.hpp"
+#include "time/Timer.hpp"
 #include "CircularBuffer.h"
 
 namespace Sensors {
@@ -12,7 +13,7 @@ namespace Sensors {
 
     class DFSoil : public SoilSensor {
     public:
-      DFSoil(int pin, Time::Clock &clock);
+      DFSoil(int pin, Time::MillisProvider& millisProvider);
       int getPercent();
       void setHigh(int high) {
         _high = high;
@@ -35,14 +36,13 @@ namespace Sensors {
     private:
       void calculateConstants();
       int _pin;
-      Time::Clock& _clock;
+      Time::Timer _timer;
       int _high;
       int _low;
       float _m;
       float _b;
       CircularBuffer<int, 10> _buffer;
       int _lastAverage;
-      unsigned long _lastRead;
     };
 
   }

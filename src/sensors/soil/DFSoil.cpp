@@ -3,21 +3,19 @@
 using namespace Sensors::Soil;
 using namespace Time;
 
-DFSoil::DFSoil(int pin, Clock &clock) :
+DFSoil::DFSoil(int pin, MillisProvider& millisProvider) :
   _pin(pin),
-  _clock(clock),
+  _timer(millisProvider, 100, Units::MILLISECONDS),
   _high(355),
   _low(709),
   _m(0),
   _b(0),
-  _lastAverage(0),
-  _lastRead{0} {
+  _lastAverage(0) {
   calculateConstants();
 }
 
 void DFSoil::loop() {
-  unsigned long now = _clock.getMillis();
-  if (now - _lastRead < 100) {
+  if (!_timer.isExpired()) {
     return;
   }
   _buffer.push(readPercent());
@@ -26,7 +24,7 @@ void DFSoil::loop() {
     sum += _buffer[i];
   }
   _lastAverage = sum / _buffer.size();
-  _lastRead = now;
+  _timer.reset();
 }
 
 int DFSoil::getPercent() {

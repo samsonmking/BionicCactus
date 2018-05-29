@@ -2,8 +2,9 @@
 
 using namespace Sensors::Pump;
 
-PeriPump::PeriPump(Clock& clock, int pinOut1, int pinOut2, int pinPWM) :
-_clock(clock), 
+PeriPump::PeriPump(MillisProvider& millisProvider, int pinOut1, int pinOut2, int pinPWM) :
+_millisProvider(millisProvider),
+_timer(millisProvider, 0, Units::MILLISECONDS, false),
 _pinOut1(pinOut1), 
 _pinOut2(pinOut2), 
 _pinPWM(pinPWM), 
@@ -43,9 +44,8 @@ void PeriPump::stop() {
 }
 
 void PeriPump::setVolume(int vol) {
-  _startTime = _clock.getMillis();
-  int secs = (((vol / _flowRate) * _speed) / 100);
-  _stopTime = (1000 * (unsigned long)secs) + _startTime;
+  unsigned long secs = (((vol / _flowRate) * _speed) / 100);
+  _timer.reset(secs, Units::SECONDS, false);
 }
 
 void PeriPump::loop() {
@@ -58,9 +58,5 @@ void PeriPump::loop() {
 }
 
 bool PeriPump::dispenseDone() {
-  unsigned long now = _clock.getMillis();
-  if (now < _stopTime)  {
-    return false;
-  }
-  return true;
+  return _timer.isExpired();
 }

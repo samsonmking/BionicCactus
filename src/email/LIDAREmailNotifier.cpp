@@ -5,22 +5,21 @@ using namespace Sensors::Bottle;
 
 namespace Email {
 
-    LIDAREmailNotifier::LIDAREmailNotifier(Clock& clock, LidarBottle& bottle, EmailConfig& config) :
-    _clock(clock), 
+    LIDAREmailNotifier::LIDAREmailNotifier(MillisProvider& millisProvider, LidarBottle& bottle, EmailConfig& config) :
+    _millisProvider(millisProvider),
+    _timer(Timer(millisProvider, 2, Units::HOURS)), 
     _bottle(bottle),
     _config(config), 
-    _warnLevel{25}, 
-    _interval{7200000},
-    _lastNotified{0} {
+    _warnLevel{25} {
 
     }
 
     void LIDAREmailNotifier::loop() {
         if(!_config.configured) return;
         if(_bottle.getPercent() > _warnLevel) return;
-        if((_clock.getMillis() - _lastNotified) < (_config.interval * (unsigned long)3600000)) return;
+        if(!_timer.isExpired()) return;
         if(sendNotification()) {
-            _lastNotified = _clock.getMillis();
+            _timer.reset();
         }
     }
 
@@ -32,7 +31,7 @@ namespace Email {
             "Water Level Warning",
             formatBody()
         };
-        EmailClient client(_clock, 
+        EmailClient client(_millisProvider, 
             _config.server, 
             _config.port, 
             _config.username, 

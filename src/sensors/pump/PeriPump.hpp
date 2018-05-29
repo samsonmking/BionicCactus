@@ -2,7 +2,8 @@
 #define PERI_PUMP_H
 
 #include "Pump.hpp"
-#include "time/Clock.hpp"
+#include "time/MillisProvider.hpp"
+#include "time/Timer.hpp"
 #include <Arduino.h>
 
 using namespace Time;
@@ -12,7 +13,7 @@ namespace Sensors{
 
     class PeriPump : public Pump {
     public:
-      PeriPump(Clock& clock, int pinOut1, int pinOut2, int pinPWM);
+      PeriPump(MillisProvider& millisProvider, int pinOut1, int pinOut2, int pinPWM);
       enum Directions { Forward, Backward };
       virtual void setVolume(int vol);
       virtual bool dispenseDone();
@@ -31,7 +32,8 @@ namespace Sensors{
       void runPump(int speed, Directions dir);
       void stop();
     private:
-      Clock &_clock;
+      MillisProvider& _millisProvider;
+      Timer _timer;
       int _pinOut1;
       int _pinOut2;
       int _pinPWM;

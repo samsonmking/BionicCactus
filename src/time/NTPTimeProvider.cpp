@@ -12,10 +12,6 @@ namespace Time {
 
     }
 
-    unsigned long NTPTimeProvider::getMillis() {
-        return millis();
-    }
-
     time_t NTPTimeProvider::getCurrentTime() {
         return _currentEpoc + ((millis() - this->_lastUpdate) / 1000);
     }

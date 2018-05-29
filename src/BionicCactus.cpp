@@ -6,6 +6,7 @@
 #include "time/MockTimeProvider.hpp"
 #include <WiFiUdp.h>
 #include "time/NTPTimeProvider.hpp"
+#include "time/ArduinoMillisProvider.hpp"
 
 #include "sensors/light/LEDLight.hpp"
 #include "sensors/pump/PeriPump.hpp"
@@ -63,15 +64,16 @@ WiFiUDP ntpUDP;
 NTPTimeProvider ntpTime(ntpUDP);
 // MockTime mockTime(1000);
 Clock clock(ntpTime, -4);
+ArduinoMillisProvider arduinoMillis;
 
 // Sensors Initialization
-Sensors::Pump::PeriPump pump(clock, D7, D6, D8);
+Sensors::Pump::PeriPump pump(arduinoMillis, D7, D6, D8);
 Sensors::Light::LEDLight ledLight(clock, D0);
 Sensors::Light::Light *light = &ledLight;
-Sensors::Soil::DFSoil dfSoil(A0, clock);
+Sensors::Soil::DFSoil dfSoil(A0, arduinoMillis);
 Sensors::Bottle::LidarBottle bottle;
 
-SoilRunLoop soilRunLoop(&pump, dfSoil, clock);
+SoilRunLoop soilRunLoop(&pump, dfSoil, arduinoMillis);
 
 // File Persistance Initialization
 LightFileHandler alightPersistance(light);
@@ -98,7 +100,7 @@ FileHandler *handlers[numHandlers] = {
 PersistanceContainer container(handlers, numHandlers);
 
 // Wifi Initialization
-WifiController wifiController(wifiSettings, clock);
+WifiController wifiController(wifiSettings, arduinoMillis);
 
 // Web Server Initialization
 ESP8266WebServer engine(80);
@@ -186,7 +188,7 @@ emailPostRequest,
 emailGetRequest);
 
 // Email Initialization
-LIDAREmailNotifier bottleEmail(clock, bottle, emailSettings.getConfig());
+LIDAREmailNotifier bottleEmail(arduinoMillis, bottle, emailSettings.getConfig());
 
 void setup() {
   Serial.begin(9600);
