@@ -9,17 +9,74 @@ namespace Email {
     _millisProvider(millisProvider),
     _timer(Timer(millisProvider, 2, Units::HOURS)), 
     _bottle(bottle),
-    _config(config), 
+    _config(config),
+    _state(NotificationStates::CHECKING), 
     _warnLevel{25} {
 
     }
 
     void LIDAREmailNotifier::loop() {
-        if(!_config.configured) return;
-        if(_bottle.getPercent() > _warnLevel) return;
-        if(!_timer.isExpired()) return;
-        if(sendNotification()) {
-            _timer.reset();
+        switch(_state) {
+            case NotificationStates::CHECKING:
+                checking();
+                break;
+            case NotificationStates::PENDING:
+                pending();
+                break;
+            case NotificationStates::SENDING:
+                sending();
+                break;
+            case NotificationStates::WAITING:
+                waiting();
+                break;
+        }
+    }
+
+    void LIDAREmailNotifier::enterChecking() {
+        _state = NotificationStates::CHECKING;
+    }
+
+    void LIDAREmailNotifier::checking() {
+        if (_bottle.getPercent() < _warnLevel) {
+             enterPending();
+        }
+    }
+
+    void LIDAREmailNotifier::enterPending() {
+        _timer.reset(10, Units::MINUTES);
+        _state = NotificationStates::PENDING;
+    }
+
+    void LIDAREmailNotifier::pending() {
+        if(_bottle.getPercent() > _warnLevel) {
+            enterChecking();
+            return;
+        }
+        if(_timer.isExpired()) {
+            enterSending();
+        }
+    }
+
+    void LIDAREmailNotifier::enterSending() {
+        _state = NotificationStates::SENDING;
+    }
+
+    void LIDAREmailNotifier::sending() {
+        if (sendNotification()) {
+            enterWaiting();
+        } else {
+            enterPending();
+        }
+    }
+
+    void LIDAREmailNotifier::enterWaiting() {
+        _timer.reset(2, Units::HOURS);
+        _state = NotificationStates::WAITING;
+    }
+
+    void LIDAREmailNotifier::waiting() {
+        if(_timer.isExpired()) {
+            enterChecking();
         }
     }
 

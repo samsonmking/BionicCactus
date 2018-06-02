@@ -9,6 +9,13 @@
 
 namespace Email {
 
+    enum class NotificationStates {
+        CHECKING,
+        PENDING,
+        SENDING,
+        WAITING
+    };
+
     class LIDAREmailNotifier {
         public:
             LIDAREmailNotifier(Time::MillisProvider& millisProvider, 
@@ -20,10 +27,19 @@ namespace Email {
             Time::Timer _timer;
             Sensors::Bottle::LidarBottle& _bottle;
             EmailConfig& _config;
+            NotificationStates _state;
             int _warnLevel;
             char _bodyBuffer[100];
             bool sendNotification();           
             const char* formatBody();
+            void enterChecking();
+            void checking();
+            void enterPending();
+            void pending();
+            void enterSending();
+            void sending();
+            void enterWaiting();
+            void waiting();
     };
 
 }
