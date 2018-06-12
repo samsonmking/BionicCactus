@@ -11,8 +11,8 @@
 #include "sensors/light/LEDLight.hpp"
 #include "sensors/pump/PeriPump.hpp"
 #include "sensors/soil/DFSoil.hpp"
+#include "sensors/scale_bottle/ScaleBottle.hpp"
 #include "SoilRunLoop.hpp"
-#include "sensors/bottle/LIDARBottle.hpp"
 
 #include "persistance/PersistanceContainer.hpp"
 #include "persistance/FileHandler.hpp"
@@ -48,7 +48,7 @@
 #include "web/bottle/BottleDashboardTemplate.hpp"
 
 #include "email/EmailClient.hpp"
-#include "email/LIDAREmailNotifier.hpp"
+#include "email/BottleEmailNotifier.hpp"
 
 using namespace Time;
 using namespace Sensors::Light;
@@ -71,7 +71,7 @@ Sensors::Pump::PeriPump pump(arduinoMillis, D7, D6, D8);
 Sensors::Light::LEDLight ledLight(clock, D0);
 Sensors::Light::Light *light = &ledLight;
 Sensors::Soil::DFSoil dfSoil(A0, arduinoMillis);
-Sensors::Bottle::LidarBottle bottle;
+Sensors::Bottle::ScaleBottle bottle(D1, D2);
 
 SoilRunLoop soilRunLoop(&pump, dfSoil, arduinoMillis);
 
@@ -188,12 +188,11 @@ emailPostRequest,
 emailGetRequest);
 
 // Email Initialization
-LIDAREmailNotifier bottleEmail(arduinoMillis, bottle, emailSettings.getConfig());
+BottleEmailNotifier bottleEmail(arduinoMillis, bottle, emailSettings.getConfig());
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   webServer.setupServer();
-  bottle.setup();
 }
 
 void loop() {
@@ -209,7 +208,6 @@ void loop() {
   pump.loop();
   dfSoil.loop();
   soilRunLoop.loop();
-  bottle.loop();
 
 }
 

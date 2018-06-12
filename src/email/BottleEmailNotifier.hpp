@@ -1,9 +1,9 @@
-#ifndef LIDAR_EMAIL_H
-#define LIDAR_EMAIL_H
+#ifndef BOTTLE_EMAIL_H
+#define BOTTLE_EMAIL_H
 
 #include "time/MillisProvider.hpp"
 #include "time/Timer.hpp"
-#include "sensors/bottle/LIDARBottle.hpp"
+#include "sensors/scale_bottle/ScaleBottle.hpp"
 #include "email/EmailClient.hpp"
 #include "email/EmailConfig.hpp"
 
@@ -16,16 +16,17 @@ namespace Email {
         WAITING
     };
 
-    class LIDAREmailNotifier {
+    class BottleEmailNotifier {
         public:
-            LIDAREmailNotifier(Time::MillisProvider& millisProvider, 
-                Sensors::Bottle::LidarBottle& bottle,
+            BottleEmailNotifier(Time::MillisProvider& millisProvider, 
+                Sensors::Bottle::ScaleBottle& bottle,
                 EmailConfig& config);
             void loop();
         private:
             Time::MillisProvider& _millisProvider;
             Time::Timer _timer;
-            Sensors::Bottle::LidarBottle& _bottle;
+            Time::Timer _interval;
+            Sensors::Bottle::ScaleBottle& _bottle;
             EmailConfig& _config;
             NotificationStates _state;
             int _warnLevel;
