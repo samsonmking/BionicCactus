@@ -67,11 +67,11 @@ Clock clock(ntpTime, -4);
 ArduinoMillisProvider arduinoMillis;
 
 // Sensors Initialization
-Sensors::Pump::PeriPump pump(arduinoMillis, D7, D6, D8);
-Sensors::Light::LEDLight ledLight(clock, D0);
+Sensors::Pump::PeriPump pump(arduinoMillis, D5, D0, D6, D8);
+Sensors::Light::LEDLight ledLight(clock, D7);
 Sensors::Light::Light *light = &ledLight;
 Sensors::Soil::DFSoil dfSoil(A0, arduinoMillis);
-Sensors::Bottle::ScaleBottle bottle(D1, D2);
+Sensors::Bottle::ScaleBottle bottle(D2, D1);
 
 SoilRunLoop soilRunLoop(&pump, dfSoil, arduinoMillis);
 

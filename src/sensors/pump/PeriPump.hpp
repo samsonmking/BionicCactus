@@ -13,7 +13,7 @@ namespace Sensors{
 
     class PeriPump : public Pump {
     public:
-      PeriPump(MillisProvider& millisProvider, int pinOut1, int pinOut2, int pinPWM);
+      PeriPump(MillisProvider& millisProvider, int pinOut1, int pinOut2, int pinPWM, int pinStandby);
       enum Directions { Forward, Backward };
       virtual void setVolume(int vol);
       virtual bool dispenseDone();
@@ -37,6 +37,7 @@ namespace Sensors{
       int _pinOut1;
       int _pinOut2;
       int _pinPWM;
+      int _pinStandby;
       int _speed = 100;
       double _flowRate;
       unsigned long _startTime;
