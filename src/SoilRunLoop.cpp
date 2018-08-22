@@ -55,7 +55,6 @@ void SoilRunLoop::checkMoisture() {
     if (vol > _maxDispense) {
       vol = _maxDispense;
     }
-    Serial.println(vol);
     enterPumping(vol);
   }
 }
@@ -68,7 +67,6 @@ void SoilRunLoop::enterPumping(int vol) {
 void SoilRunLoop::pumping() {
   if (_pump->dispenseDone()) {
     enterDispersing();
-    Serial.println("pump done");
   }
 }
 
@@ -80,7 +78,6 @@ void SoilRunLoop::enterDispersing() {
 void SoilRunLoop::dispersing() {
   if (_dispersionTimer.isExpired()) {
     enterCheckMoisture();
-    Serial.println("check moisture");
   }
 }
 
