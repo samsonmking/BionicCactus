@@ -10,7 +10,7 @@ namespace Time {
 
     }
 
-    Timer::Timer(MillisProvider& provider, unsigned long input, Units units, bool fireAtStart = false) :
+    Timer::Timer(MillisProvider& provider, unsigned long input, Units units, bool fireAtStart) :
     _provider(provider),
     _interval{convertMillis(input, units)},
     _last{provider.getMillis()},
