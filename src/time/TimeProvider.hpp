@@ -3,11 +3,11 @@
 
 namespace Time {
 
-  typedef unsigned long time_t;
+  typedef unsigned long unix_time_t;
 
   class TimeProvider {
   public:
-    virtual time_t getCurrentTime() = 0;
+    virtual unix_time_t getCurrentTime() = 0;
   };
 
 }

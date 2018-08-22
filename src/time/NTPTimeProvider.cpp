@@ -12,7 +12,7 @@ namespace Time {
 
     }
 
-    time_t NTPTimeProvider::getCurrentTime() {
+    unix_time_t NTPTimeProvider::getCurrentTime() {
         return _currentEpoc + ((millis() - this->_lastUpdate) / 1000);
     }
 

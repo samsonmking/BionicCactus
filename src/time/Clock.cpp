@@ -1,14 +1,14 @@
 #include "Clock.hpp"
 
-namespace Time{
+namespace Time {
 
-  Clock::Clock(TimeProvider& timeProvider, int timeZone):
+  Clock::Clock(Time::TimeProvider& timeProvider, int timeZone):
   _timeProvider(timeProvider), 
   _timeZone(timeZone) {
 
   }
 
-  time_t Clock::getCurrentTime() {
+  unix_time_t Clock::getCurrentTime() {
     return _timeProvider.getCurrentTime()  + (_timeZone * 3600);
   }
 
@@ -18,13 +18,13 @@ namespace Time{
 
   bool Clock::isAtOrPastTime(const char* timeChr)
   {
-    time_t timeNow = getCurrentTime();
+    unix_time_t timeNow = getCurrentTime();
     int secsNow = getSecondsSinceMidnight(timeNow);
     int secsDesired = getSecondsSinceMidnight(timeChr);
     return secsNow >= secsDesired;
   }
 
-  unsigned int Clock::getSecondsSinceMidnight(time_t moment) {
+  unsigned int Clock::getSecondsSinceMidnight(unix_time_t moment) {
     return (hour(moment) * 3600) + (minute(moment) * 60) + (second(moment));
   }
 
@@ -42,7 +42,7 @@ namespace Time{
     return (hours * 3600) + (minutes * 60) + seconds;
   }
 
-  void Clock::getTimeChr(char* out, time_t moment) {
+  void Clock::getTimeChr(char* out, unix_time_t moment) {
     char hr[3] = "00";
     printDigits(hr, hour(moment));
     char min[3] = "00";
@@ -61,15 +61,15 @@ namespace Time{
     }
   }
 
-  int Clock::hour(time_t aTime){
+  int Clock::hour(unix_time_t aTime){
     return ((aTime  % 86400L) / 3600);
   }
 
-  int Clock::minute(time_t aTime) {
+  int Clock::minute(unix_time_t aTime) {
     return ((aTime % 3600) / 60);
   }
 
-  int Clock::second(time_t aTime) {
+  int Clock::second(unix_time_t aTime) {
     return (aTime % 60);
   }
 

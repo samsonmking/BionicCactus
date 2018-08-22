@@ -1,30 +1,27 @@
-#ifndef CLOCK_H
-#define CLOCK_H
+#pragma once
 
 #include "TimeProvider.hpp"
 #include <Arduino.h>
 
-namespace Time {
-
   class Clock {
-  public:
-    Clock(TimeProvider& timeProvider, int timeZone);
-    bool isAtOrPastTime(const char* timeChr);
-    Time::time_t getTimeFromChr(char* input);
-    Time::time_t getCurrentTime();
-    void getTimeChr(char* out, time_t moment);
-    void getTimeNowChr(char* out);
-    unsigned int getSecondsSinceMidnight(time_t time);
-    unsigned int getSecondsSinceMidnight(const char* timeChr);
-  private:
+    private:
+    Time::TimeProvider& _timeProvider;
     int _timeZone;
-    TimeProvider& _timeProvider;
-    int hour(time_t aTime);
-    int minute(time_t aTime);
-    int second(time_t aTime);
+    int hour(Time::unix_time_t aTime);
+    int minute(Time::unix_time_t aTime);
+    int second(Time::unix_time_t aTime);
     void printDigits(char* out, int digits);
-  };
-  
-}
+    
+  public:
+    Clock(Time::TimeProvider& timeProvider, int timeZone);
+    
+    bool isAtOrPastTime(const char* timeChr);
+    Time::unix_time_t getTimeFromChr(char* input);
+    Time::unix_time_t getCurrentTime();
+    void getTimeChr(char* out, Time::unix_time_t moment);
+    void getTimeNowChr(char* out);
+    unsigned int getSecondsSinceMidnight(Time::unix_time_t time);
+    unsigned int getSecondsSinceMidnight(const char* timeChr);
 
-#endif
+  };
+

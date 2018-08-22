@@ -2,19 +2,19 @@
 #define MOCKTIME_H
 
 #include "TimeProvider.hpp"
+#include <Arduino.h>
 
 namespace Time {
 
   class MockTime : public TimeProvider {
   public:
-    MockTime(time_t time): currentTime(time) {
+    MockTime(unix_time_t time): currentTime(time) {
     };
 
-    virtual time_t getCurrentTime() {
+    virtual unix_time_t getCurrentTime() override {
       return currentTime;
     }
-    time_t currentTime;
-    unsigned long millis;
+    unix_time_t currentTime;
   };
 
 }

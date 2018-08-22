@@ -13,7 +13,7 @@ namespace Time {
     class NTPTimeProvider : public TimeProvider {
         public:
             NTPTimeProvider(UDP& udp);
-            virtual time_t getCurrentTime() override;
+            virtual unix_time_t getCurrentTime() override;
             bool update();
             bool forceUpdate();
         private:
