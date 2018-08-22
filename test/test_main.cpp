@@ -2,45 +2,57 @@
 
 #include <Arduino.h>
 #include "unity.h"
-#include "time/MockTimeProvider.hpp"
 #include "time/Clock.hpp"
+#include "time/MockTimeProvider.hpp"
+#include "MockMillisProvider.hpp"
 #include "sensors/light/LEDLight.hpp"
-#include "sensors/light/MockLight.hpp"
+#include "sensors/light/LEDLight.cpp"
 #include "sensors/soil/DFSoil.hpp"
 #include "sensors/soil/MockSoilSensor.hpp"
 #include "sensors/pump/MockPump.hpp"
 #include "SoilRunLoop.hpp"
 #include "email/SMTPUtils.hpp"
 
-using namespace Sensors::Light;
-using namespace Sensors::Pump;
-using namespace Sensors::Soil;
-using namespace Time;
+// The linker is not automatically including the implementations so they must be manually loaded.
+// This problem should be resolved after refacting classes into the lib folder to conform with
+// Arduino standard. This is a workaround to ensure tests continue working until then.
+#include "time/Clock.cpp"
+#include "sensors/soil/DFSoil.cpp"
+#include "time/Timer.cpp"
+#include "time/TimeUnitConverter.cpp"
+#include "SoilRunLoop.cpp"
+#include "email/SMTPUtils.cpp"
+
 using namespace Email;
+
+Time::unix_time_t testTime = 1508889015;
+Time::MockTime mocktime(testTime);
+Clock aclock(mocktime, 1);
 
 // Clock Tests
 void test_mock_provider() {
   // 10/24/2017 11:50:15 PM GMT
-  time_t testTime = 1508889015;
+  unix_time_t testTime = 1508889015;
   MockTime mocktime(testTime);
-  time_t currentTime = mocktime.getCurrentTime();
+  unix_time_t currentTime = mocktime.getCurrentTime();
   TEST_ASSERT_EQUAL(testTime, currentTime);
 }
 
 void test_get_current_time() {
   // 10/24/2017 11:50:15 PM GMT
-  time_t testTime = 1508889015;
+  unix_time_t testTime = 1508889015;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
-  time_t currentTime = aclock.getCurrentTime();
-  TEST_ASSERT_EQUAL(testTime, currentTime);
+  int timeZone = 1;
+  Clock aclock(mocktime, timeZone);
+  unix_time_t currentTime = aclock.getCurrentTime();
+  TEST_ASSERT_EQUAL(testTime  + (timeZone * 3600), currentTime);
 }
 
 void test_get_time_now_chr() {
   // 10/24/2017 11:50:15 PM GMT
-  time_t testTime = 1508889015;
+  unix_time_t testTime = 1508889015;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
+  Clock aclock(mocktime, 0);
   char timeNow[9];
   aclock.getTimeNowChr(timeNow);
   const char* correctTime = "23:50:15";
@@ -49,9 +61,9 @@ void test_get_time_now_chr() {
 
 void test_get_time_now_chr_est() {
   // 10/24/2017 11:50:15 PM GMT
-  time_t testTime = 1508889015;
+  unix_time_t testTime = 1508889015;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, -4);
+  Clock aclock(mocktime, -4);
   char timeNow[9];
   aclock.getTimeNowChr(timeNow);
   const char* correctTime = "19:50:15";
@@ -60,26 +72,26 @@ void test_get_time_now_chr_est() {
 
 void test_past_time() {
   // 10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
+  unix_time_t testTime = 1508936400;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
+  Clock aclock(mocktime, 0);
   TEST_ASSERT_TRUE(aclock.isAtOrPastTime("9:00:00"));
 }
 
 void test_not_past_time() {
   // 10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
+  unix_time_t testTime = 1508936400;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
+  Clock aclock(mocktime, 0);
   TEST_ASSERT_FALSE(aclock.isAtOrPastTime("14:00:00"));
 }
 
 // Light Tests
 void test_light_on_after_settime() {
   //10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
+  unix_time_t testTime = 1508936400;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
+  Clock aclock(mocktime, 0);
   LEDLight alight(aclock, D5);
   alight.setTimeOn("09:00:00");
   alight.setTimeOff("14:00:00");
@@ -89,9 +101,9 @@ void test_light_on_after_settime() {
 
 void test_light_on_after_settime_half_bright() {
   //10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
+  unix_time_t testTime = 1508936400;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
+  Clock aclock(mocktime, 0);
   LEDLight alight(aclock, D5);
   alight.setTimeOn("09:00:00");
   alight.setTimeOff("14:00:00");
@@ -102,9 +114,9 @@ void test_light_on_after_settime_half_bright() {
 
 void test_light_off_after_settime() {
   //10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
+  unix_time_t testTime = 1508936400;
   MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
+  Clock aclock(mocktime, 0);
   LEDLight alight(aclock, D5);
   alight.setTimeOn("09:00:00");
   alight.setTimeOff("11:00:00");
@@ -114,8 +126,8 @@ void test_light_off_after_settime() {
 
 // DFSoil Tests
 void test_calculate_percent() {
-  MockLight light;
-  DFSoil dfsoil(A0, &light);
+  MockMillisProvider aMillis(0);
+  DFSoil dfsoil(A0, aMillis);
   dfsoil.setLow(770);
   dfsoil.setHigh(419);
   int percent = dfsoil.calculatePercent(500);
@@ -124,60 +136,59 @@ void test_calculate_percent() {
 
 // SoilRunLoop Tests
 void test_starting_state_check_moisture() {
-  //10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
-  MockTime mocktime(testTime);
-  Clock aclock(&mocktime, 0);
+  MockMillisProvider mocktime(0);
   MockPump pump;
-  MockSoilSensor sensor;
-  SoilRunLoop runLoop(&pump, &sensor, aclock);
+  MockSoilSensor sensor(75);
+  SoilRunLoop runLoop(&pump, sensor, mocktime);
   TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
 }
 
 void test_pump_vol() {
-  //10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
-  MockTime mocktime(testTime);
-  mocktime.millis = 0;
-  Clock aclock(&mocktime, 0);
+  MockMillisProvider mocktime(0);
   MockPump pump;
-  MockSoilSensor sensor;
-  sensor.percent = 50;
-  SoilRunLoop runLoop(&pump, &sensor, aclock);
+  MockSoilSensor sensor(50);
+  SoilRunLoop runLoop(&pump, sensor, mocktime);
+  int disperseMin = 5;
+  runLoop.setDispersionMin(disperseMin);
   runLoop.setmlPerPercent(1);
   runLoop.setSetPoint(80);
+  mocktime.setMillis(convertMillis(disperseMin + 1, Units::MINUTES));
   runLoop.loop();
-
+   TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
+  runLoop.loop();
   TEST_ASSERT_EQUAL(SoilRunLoop::Pumping, runLoop.getState());
   TEST_ASSERT_EQUAL(30, pump.lastVol);
 }
 
 void test_full_cycle() {
-  //10/25/2017 1:00:00 PM GMT
-  time_t testTime = 1508936400;
-  MockTime mocktime(testTime);
-  mocktime.millis = 0;
-  Clock aclock(&mocktime, 0);
+  MockMillisProvider mocktime(0);
   MockPump pump;
-  MockSoilSensor sensor;
-  sensor.percent = 50;
-  SoilRunLoop runLoop(&pump, &sensor, aclock);
+  MockSoilSensor sensor(50);
+  SoilRunLoop runLoop(&pump, sensor, mocktime);
+  int disperseMin = 5;
+  runLoop.setDispersionMin(disperseMin);
   runLoop.setmlPerPercent(1);
   runLoop.setSetPoint(80);
+  runLoop.setHrsAtMoisture(12);
+  runLoop.setHrsDry(12);
+  mocktime.setMillis(convertMillis(disperseMin + 1, Units::MINUTES));
+  TEST_ASSERT_EQUAL(SoilRunLoop::Dispersing, runLoop.getState());
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
   runLoop.loop();
   TEST_ASSERT_EQUAL(SoilRunLoop::Pumping, runLoop.getState());
   TEST_ASSERT_EQUAL(30, pump.lastVol);
   pump.dispenseIsDone = true;
   runLoop.loop();
   TEST_ASSERT_EQUAL(SoilRunLoop::Dispersing, runLoop.getState());
-  mocktime.millis = 600005;
+  mocktime.setMillis(convertMillis((disperseMin * 2) + 1, Units::MINUTES));
   sensor.percent = 80;
   runLoop.loop();
   TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
-  mocktime.millis = 43200000;
+  mocktime.setMillis(convertMillis(13, Units::HOURS));
   runLoop.loop();
   TEST_ASSERT_EQUAL(SoilRunLoop::Drying, runLoop.getState());
-  mocktime.millis = 86400001;
+  mocktime.setMillis(convertMillis(25, Units::HOURS));
   runLoop.loop();
   TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
 }
@@ -185,13 +196,13 @@ void test_full_cycle() {
 // Email Tests
 void test_email_status_code() {
   const char* example_reply_with_code = "220 smtp.example.com ESMTP Postfix";
-  int good_code = getStatusCodeFromReply(example_reply_with_code);
+  int good_code = getStatusCodeFromReply((uint8_t*)example_reply_with_code);
   TEST_ASSERT_EQUAL(220, good_code);
   const char* example_reply_no_code = "no code here";
-  int bad_code = getStatusCodeFromReply(example_reply_no_code))
+  int bad_code = getStatusCodeFromReply((uint8_t*)example_reply_no_code);
   TEST_ASSERT_EQUAL(-1, bad_code);
   const char* too_short = "22";
-  int short_code = getStatusCodeFromReply(too_short);
+  int short_code = getStatusCodeFromReply((uint8_t*)too_short);
   TEST_ASSERT_EQUAL(-1, short_code);
 }
 
