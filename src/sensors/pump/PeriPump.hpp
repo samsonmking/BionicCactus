@@ -42,6 +42,7 @@ namespace Sensors{
       double _flowRate;
       unsigned long _startTime;
       unsigned long _stopTime;
+      void enable();
     };
 
   }

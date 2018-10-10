@@ -14,6 +14,7 @@ _flowRate(1.2l) {
   pinMode(_pinOut1, OUTPUT);
   pinMode(_pinOut2, OUTPUT);
   pinMode(_pinStandby, OUTPUT);
+  enable();
   stop();
 }
 
@@ -26,7 +27,6 @@ void PeriPump::setFlowRate(double flowRate) {
 }
 
 void PeriPump::runPump(int speed, Directions dir) {
-  digitalWrite(_pinStandby, HIGH);
   if (dir == Forward)
   {
     digitalWrite(_pinOut1, HIGH);
@@ -44,7 +44,6 @@ void PeriPump::stop() {
   analogWrite(_pinPWM, 0);
   digitalWrite(_pinOut1, HIGH);
   digitalWrite(_pinOut2, HIGH);
-  digitalWrite(_pinStandby, LOW);
 }
 
 void PeriPump::setVolume(int vol) {
@@ -63,4 +62,8 @@ void PeriPump::loop() {
 
 bool PeriPump::dispenseDone() {
   return _timer.isExpired();
+}
+
+void PeriPump::enable() {
+  digitalWrite(_pinStandby, HIGH);
 }
