@@ -3,6 +3,7 @@
 #include "TimeProvider.hpp"
 #include <Arduino.h>
 
+namespace Time {
   class Clock {
     private:
     Time::TimeProvider& _timeProvider;
@@ -24,4 +25,4 @@
     unsigned int getSecondsSinceMidnight(const char* timeChr);
 
   };
-
+}
