@@ -34,6 +34,7 @@ void WifiFileHandler::save() {
     auto &wifiRoot = jsonBuffer.createObject();
     wifiRoot[CONST_SSID] = _ssid;
     wifiRoot[CONST_PASSWORD] = _password;
+    wifiRoot[CONST_HOSTNAME] = _hostname;
     auto file = SPIFFS.open(_filePath, "w");
     wifiRoot.printTo(file);
     file.close();
