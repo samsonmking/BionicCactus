@@ -3,7 +3,7 @@
 
 #include "web/SettingsFormTemplate.hpp"
 #include "constants/DFSoilConstants.hpp"
-#include "sensors/soil/DFSoil.hpp"
+#include "sensors/soil/SoilSensor.hpp"
 #include <Arduino.h>
 
 using namespace Constants;
@@ -13,11 +13,11 @@ namespace Web {
 
     class DFSoilFormTemplate : public SettingsFormTemplate {
     public:
-        DFSoilFormTemplate(const char *postUri, DFSoil &soil);
+        DFSoilFormTemplate(const char *postUri, SoilSensor &soil);
         virtual int getForm(char *out, size_t len) override;
     private:
         const char *_postUri;
-        DFSoil &_soil;
+        SoilSensor &_soil;
     };
 
 }

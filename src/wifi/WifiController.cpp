@@ -12,6 +12,10 @@ bool WifiController::isConnected() {
     return _state == CLIENT_CONNECTED;
 }
 
+bool WifiController::isAccessPoint() {
+    return _state == AP_CONNECTED;
+}
+
 void WifiController::loop() {
     switch(_state){
         case DISCONNECTED:

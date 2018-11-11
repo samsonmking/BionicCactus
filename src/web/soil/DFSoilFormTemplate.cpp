@@ -2,7 +2,7 @@
 
 using namespace Web;
 
-DFSoilFormTemplate::DFSoilFormTemplate(const char *postUri, DFSoil &soil) : _postUri(postUri), _soil(soil) {
+DFSoilFormTemplate::DFSoilFormTemplate(const char *postUri, SoilSensor &soil) : _postUri(postUri), _soil(soil) {
 
 }
 

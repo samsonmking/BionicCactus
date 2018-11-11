@@ -5,7 +5,7 @@ using namespace Sensors::Bottle;
 
 namespace Email {
 
-    BottleEmailNotifier::BottleEmailNotifier(MillisProvider& millisProvider, ScaleBottle& bottle, EmailConfig& config) :
+    BottleEmailNotifier::BottleEmailNotifier(MillisProvider& millisProvider, Bottle& bottle, EmailConfig& config) :
     _millisProvider(millisProvider),
     _timer(Timer(millisProvider, 2, Units::HOURS)),
     _interval(Timer(millisProvider, 10, Units::SECONDS)), 

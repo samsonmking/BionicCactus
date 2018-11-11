@@ -14,25 +14,25 @@ namespace Sensors {
     class DFSoil : public SoilSensor {
     public:
       DFSoil(int pin, Time::MillisProvider& millisProvider);
-      int getPercent();
-      void setHigh(int high) {
+      int getPercent() override;
+      void setHigh(int high) override {
         _high = high;
         calculateConstants();
       };
-      int getHigh() {
+      int getHigh() override {
         return _high;
       }
-      void setLow(int low) {
+      void setLow(int low) override {
         _low = low;
         calculateConstants();
       };
-      int getLow() {
+      int getLow() override {
         return _low;
       }
       int readRaw();
-      virtual int readPercent();
+      int readPercent();
       int calculatePercent(int raw);
-      void loop();
+      void loop() override;
     private:
       void calculateConstants();
       int _pin;

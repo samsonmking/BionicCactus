@@ -1,7 +1,7 @@
 #include <web/soil/DFSoilPostRequestHandler.hpp>
 using namespace Web;
 
-DFSoilPostRequestHandler::DFSoilPostRequestHandler(const char *uri, DFSoil &soil, FileHandler *persistance) :
+DFSoilPostRequestHandler::DFSoilPostRequestHandler(const char *uri, SoilSensor &soil, FileHandler *persistance) :
 _uri(uri), _soil(soil), _persistance(persistance) {
 
 }

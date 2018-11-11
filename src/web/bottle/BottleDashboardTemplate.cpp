@@ -4,7 +4,7 @@ using namespace Sensors::Bottle;
 
 namespace Web {
 
-    BottleDashboardTemplate::BottleDashboardTemplate(ScaleBottle& bottle) :
+    BottleDashboardTemplate::BottleDashboardTemplate(Bottle& bottle) :
     _bottle(bottle) {
 
     }

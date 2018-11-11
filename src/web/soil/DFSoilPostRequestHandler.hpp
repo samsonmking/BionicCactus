@@ -3,7 +3,7 @@
 
 #include "web/PostRequestHandler.hpp"
 #include "constants/DFSoilConstants.hpp"
-#include "sensors/soil/DFSoil.hpp"
+#include "sensors/soil/SoilSensor.hpp"
 #include <Arduino.h>
 #include "persistance/FileHandler.hpp"
 
@@ -14,12 +14,12 @@ namespace Web {
 
     class DFSoilPostRequestHandler : public PostRequestHandler {
     public:
-        DFSoilPostRequestHandler(const char *uri, DFSoil &soil, FileHandler *persistance);
+        DFSoilPostRequestHandler(const char *uri, SoilSensor &soil, FileHandler *persistance);
         virtual void setVals(PostParameter postParams[], int numParams);
         virtual const char *getURI() override;
     private:
         const char *_uri;
-        DFSoil &_soil;
+        SoilSensor &_soil;
         FileHandler *_persistance;
     };
 };

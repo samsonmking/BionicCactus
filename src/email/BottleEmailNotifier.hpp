@@ -3,7 +3,7 @@
 
 #include "time/MillisProvider.hpp"
 #include "time/Timer.hpp"
-#include "sensors/scale_bottle/ScaleBottle.hpp"
+#include "sensors/scale_bottle/Bottle.hpp"
 #include "email/EmailClient.hpp"
 #include "email/EmailConfig.hpp"
 
@@ -19,14 +19,14 @@ namespace Email {
     class BottleEmailNotifier {
         public:
             BottleEmailNotifier(Time::MillisProvider& millisProvider, 
-                Sensors::Bottle::ScaleBottle& bottle,
+                Sensors::Bottle::Bottle& bottle,
                 EmailConfig& config);
             void loop();
         private:
             Time::MillisProvider& _millisProvider;
             Time::Timer _timer;
             Time::Timer _interval;
-            Sensors::Bottle::ScaleBottle& _bottle;
+            Sensors::Bottle::Bottle& _bottle;
             EmailConfig& _config;
             NotificationStates _state;
             int _warnLevel;

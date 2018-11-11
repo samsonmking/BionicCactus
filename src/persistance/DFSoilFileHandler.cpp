@@ -1,7 +1,7 @@
 #include <persistance/DFSoilFileHandler.hpp>
 using namespace Persistance;
 
-DFSoilFileHandler::DFSoilFileHandler(DFSoil &soil) : _soil(soil) {
+DFSoilFileHandler::DFSoilFileHandler(SoilSensor &soil) : _soil(soil) {
 
 }
 

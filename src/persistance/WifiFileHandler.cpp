@@ -2,24 +2,25 @@
 
 using namespace Persistance;
 
-WifiFileHandler::WifiFileHandler() : _configured(false) {
+WifiFileHandler::WifiFileHandler() : _configured(false) { 
     _password[0] = 0;
-    _ssid[0] = 0;
+    _ssid[0] = 0; 
 }
 
-void WifiFileHandler::load() {
-    auto file = SPIFFS.open(_filePath, "r");
+void WifiFileHandler::load() { 
+    Serial.println("opening file");
+    auto file = SPIFFS.open(_filePath, "r"); 
     if (!file) {
+        Serial.println("file doesn't exist");
         _configured = false;
-        return;
+        return; 
     }
-    StaticJsonBuffer<CONST_FILE_LENGTH> jsonBuffer;
-    auto &wifiRoot = jsonBuffer.parseObject(file);
-    file.close();
 
-    strncpy(_ssid, wifiRoot[CONST_SSID], 100);
-    strncpy(_password, wifiRoot[CONST_PASSWORD], 100);
-    _configured = true;
+    StaticJsonBuffer<CONST_FILE_LENGTH> jsonBuffer; 
+    auto &wifiRoot = jsonBuffer.parseObject(file); file.close();
+
+    strncpy(_ssid, wifiRoot[CONST_SSID], 100); 
+    strncpy(_password, wifiRoot[CONST_PASSWORD], 100); _configured = true; 
 }
 
 void WifiFileHandler::save() {

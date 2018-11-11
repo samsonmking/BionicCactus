@@ -15,6 +15,7 @@ namespace Wireless {
             WifiController(WifiFileHandler &persistance, Time::MillisProvider& millisProvider);
             void loop();
             bool isConnected();
+            bool isAccessPoint();
         private:
             enum States {
                 DISCONNECTED,
