@@ -12,11 +12,20 @@ namespace Wireless {
 
     class WifiController {
         public:
-            WifiController(WifiFileHandler &persistance, Time::MillisProvider& millisProvider);
+            WifiController(int triggerPin,
+                    WifiFileHandler &persistance, 
+                    Time::MillisProvider& millisProvider);
             void loop();
             bool isConnected();
             bool isAccessPoint();
+            void clientMode();
         private:
+            void disconnected();
+            void apConnecting();
+            void clientConnecting();
+            void clientConnected();
+            void delay();
+            bool switchToAP();
             enum States {
                 DISCONNECTED,
                 AP_CONNECTING,
@@ -26,6 +35,7 @@ namespace Wireless {
                 DELAY
             };
             States _state;
+            int _triggerPin;
             WifiFileHandler &_persistance;
             Time::Timer _timer;
     };

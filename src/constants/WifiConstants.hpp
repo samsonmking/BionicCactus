@@ -5,6 +5,7 @@ namespace Constants {
 
     static const char *CONST_SSID = "ssid";
     static const char *CONST_PASSWORD = "password";
+    static const char *CONST_HOSTNAME = "hostname";
     
 }
 

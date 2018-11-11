@@ -12,7 +12,7 @@ PostRequestHandler *runLoopPostRequest,
 GetRequestHandler *runLoopGetRequest,
 PostRequestHandler *wifiPostRequest,
 GetRequestHandler *wifiGetRequest,
-WifiFileHandler &wifiSettings,
+WifiController &wifiController,
 PostRequestHandler *emailPostRequest,
 GetRequestHandler *emailGetRequest) : 
 _ws(ws),
@@ -27,7 +27,7 @@ _runLoopPostRequest(runLoopPostRequest),
 _runLoopGetRequest(runLoopGetRequest),
 _wifiPostRequest(wifiPostRequest),
 _wifiGetRequest(wifiGetRequest),
-_wifiSettings(wifiSettings),
+_wifiController(wifiController),
 _emailPostRequest(emailPostRequest),
 _emailGetRequest(emailGetRequest) {
     resetBuffer();
@@ -37,7 +37,7 @@ void BCWebServer::setupServer() {
     // Configure Endpoints
     _ws->on(_getIndex->getURI(), [this]() {
         resetBuffer();
-        if (_wifiSettings.isConfigured()) {
+        if (_wifiController.isConnected()) {
             handleGet(_getIndex);
         } else {
             redirect(_wifiGetRequest->getURI());
@@ -51,6 +51,7 @@ void BCWebServer::setupServer() {
         resetBuffer();
         handlePost(_wifiPostRequest);
         _ws->send(200, "text/plain", "WiFi will disconnect in 5 seconds. Refresh and check connection.");
+        _wifiController.clientMode();
     });
     _ws->on(_getLightConfig->getURI(), [this]() {
         resetBuffer();

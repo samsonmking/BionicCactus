@@ -2,7 +2,8 @@
 
 using namespace Persistance;
 
-WifiFileHandler::WifiFileHandler() : _configured(false) { 
+WifiFileHandler::WifiFileHandler() : _configured(false),
+    _hostname{'b', 'i', 'o', 'n', 'i', 'c', '_', 'c', 'a', 'c', 't', 'u', 's'} { 
     _password[0] = 0;
     _ssid[0] = 0; 
 }
@@ -20,7 +21,12 @@ void WifiFileHandler::load() {
     auto &wifiRoot = jsonBuffer.parseObject(file); file.close();
 
     strncpy(_ssid, wifiRoot[CONST_SSID], 100); 
-    strncpy(_password, wifiRoot[CONST_PASSWORD], 100); _configured = true; 
+    strncpy(_password, wifiRoot[CONST_PASSWORD], 100); 
+    const char *savedHostname = wifiRoot[CONST_HOSTNAME];
+    if (savedHostname) {
+        strncpy(_hostname, wifiRoot[CONST_HOSTNAME], 100);
+    }
+    _configured = true; 
 }
 
 void WifiFileHandler::save() {
@@ -56,4 +62,12 @@ const char *WifiFileHandler::getPassword() {
 
 void WifiFileHandler::setPassword(const char *password) {
     strncpy(_password, password, 100);
+}
+
+const char *WifiFileHandler::getHostname() {
+    return _hostname;
+}
+
+void WifiFileHandler::setHostname(const char *hostname) {
+    strncpy(_hostname, hostname, 100);
 }

@@ -21,6 +21,10 @@ void WifiPostRequestHandler::setVals(PostParameter params[], int numParams) {
             _wifi.setPassword(params[i].value);
             continue;
         }
+        else if(strcmp(params[i].key, CONST_HOSTNAME) == 0) {
+            _wifi.setHostname(params[i].value);
+            continue;
+        }
     }
     _wifi.save();
     

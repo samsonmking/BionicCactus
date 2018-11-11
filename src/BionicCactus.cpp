@@ -1,6 +1,6 @@
 #ifndef UNIT_TEST
 
-#define SIMULATED false
+#define SIMULATED true
 
 #include <Arduino.h>
 
@@ -142,7 +142,7 @@ GetRequestHandler *runLoopGetRequest = &getRunLoopConfig;
 // Wifi Initialization
 WifiFileHandler wifiSettings;
 FileHandler *wifiPersistance = &wifiSettings;
-WifiController wifiController(wifiSettings, arduinoMillis);
+WifiController wifiController(D3, wifiSettings, arduinoMillis);
 WifiPostRequestHandler aWifiPostRequest("/config/wifi/submit", wifiSettings);
 PostRequestHandler *wifiPostRequest = &aWifiPostRequest;
 WifiFormTemplate aWifiFormTemplate(wifiPostRequest->getURI(), wifiSettings);
@@ -197,7 +197,7 @@ BCWebServer webServer(
   runLoopGetRequest,
   wifiPostRequest,
   wifiGetRequest,
-  wifiSettings,
+  wifiController,
   emailPostRequest,
   emailGetRequest);
 
