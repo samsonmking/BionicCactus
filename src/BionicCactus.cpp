@@ -149,13 +149,12 @@ PersistanceContainer container(handlers, sizeof(handlers) / sizeof(FileHandler *
 // Web Server Initialization
 ESP8266WebServer engine(80);
 
-static const int numDashboards = 2;
-ValuesDashboardTemplate *dashboards[numDashboards] = {
+ValuesDashboardTemplate *dashboards[] = {
    &soilDashboard,
    &bottleDashboard
 };
  
-IndexDashboard indexDashboard(dashboards, numDashboards);
+IndexDashboard indexDashboard(dashboards, sizeof(dashboards) / sizeof(ValuesDashboardTemplate *));
 
 IndexConnectedGetRequestHandler aGetIndexConnected(
   header, 
