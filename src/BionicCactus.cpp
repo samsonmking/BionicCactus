@@ -1,6 +1,6 @@
 #ifndef UNIT_TEST
 
-#define SIMULATED true
+#define SIMULATED false
 
 #include <Arduino.h>
 
@@ -63,6 +63,8 @@ using namespace Wireless;
 using namespace Web;
 using namespace Email;
 
+void contributeWebComponents();
+
 // Time Initialization
 WiFiUDP ntpUDP;
 NTPTimeProvider ntpTime(ntpUDP);
@@ -77,11 +79,8 @@ Sensors::Pump::PeriPump pump(arduinoMillis, D5, D0, D6, D8);
 PeriPumpFileHandler aPumpPersistance(pump);
 FileHandler *pumpPersistance = &aPumpPersistance;
 PeriPumpPostRequestHandler aPumpPostRequest("/config/pump/submit", pump, pumpPersistance);
-PostRequestHandler *pumpPostRequest = &aPumpPostRequest;
-PeriPumpFormTemplate aPumpFormTemplate(pumpPostRequest->getURI(), pump);
-SettingsFormTemplate *pumpForm = &aPumpFormTemplate;
-ConfigPageGetRequestHandler getPumpConfig("/config/pump", "Pump Configuration", header, pumpForm);
-GetRequestHandler *pumpGetRequest = &getPumpConfig;
+PeriPumpFormTemplate aPumpFormTemplate(aPumpPostRequest.getURI(), pump);
+ConfigPageGetRequestHandler getPumpConfig("/config/pump", "Pump Configuration", header, &aPumpFormTemplate);
 
 // Light Initialization
 Sensors::Light::LEDLight ledLight(clock, D7);
@@ -89,11 +88,8 @@ Sensors::Light::Light *light = &ledLight;
 LightFileHandler alightPersistance(light);
 FileHandler *lightPersistance = &alightPersistance;
 LightPostRequestHandler lightPostHandler("/config/light/submit", light, lightPersistance);
-PostRequestHandler *lightPostRequest = &lightPostHandler;
-LightFormTemplate lightFormTemplate(lightPostRequest->getURI(), light);
-SettingsFormTemplate *lightForm = &lightFormTemplate;
-ConfigPageGetRequestHandler getLightConfig("/config/light", "Light Configuration", header, lightForm);
-GetRequestHandler *lightGetRequest = &getLightConfig;
+LightFormTemplate lightFormTemplate(lightPostHandler.getURI(), light);
+ConfigPageGetRequestHandler getLightConfig("/config/light", "Light Configuration", header, &lightFormTemplate);
 
 // Soil Initialization
 #if SIMULATED
@@ -104,11 +100,8 @@ GetRequestHandler *lightGetRequest = &getLightConfig;
 DFSoilFileHandler aSoilPersistance(dfSoil);
 FileHandler *soilPersistance = &aSoilPersistance;
 DFSoilPostRequestHandler aSoilPostRequest("/config/soil/submit", dfSoil, soilPersistance);
-PostRequestHandler *soilPostRequest = &aSoilPostRequest;
-DFSoilFormTemplate aSoilFormTemplate(soilPostRequest->getURI(), dfSoil);
-SettingsFormTemplate *soilForm = &aSoilFormTemplate;
-ConfigPageGetRequestHandler getSoilConfig("/config/soil", "Soil Configuration", header, soilForm);
-GetRequestHandler *soilGetRequest = &getSoilConfig;
+DFSoilFormTemplate aSoilFormTemplate(aSoilPostRequest.getURI(), dfSoil);
+ConfigPageGetRequestHandler getSoilConfig("/config/soil", "Soil Configuration", header, &aSoilFormTemplate);
 SoilDashboardTemplate soilDashboard(dfSoil);
   
 // Bottle Initialization
@@ -122,37 +115,27 @@ EmailFileHandler emailSettings;
 FileHandler *emailPersistance = &emailSettings;
 BottleEmailNotifier bottleEmail(arduinoMillis, bottle, emailSettings.getConfig());
 EmailPostRequestHandler anEmailPostRequest("/config/email/submit", emailSettings);
-PostRequestHandler* emailPostRequest = &anEmailPostRequest;
-EmailFormTemplate anEmailForm(emailPostRequest->getURI(), emailSettings.getConfig());
-SettingsFormTemplate* emailForm = &anEmailForm;
-ConfigPageGetRequestHandler getEmailSettings("/config/email", "Email Notification Configuration", header, emailForm);
-GetRequestHandler *emailGetRequest = &getEmailSettings;
+EmailFormTemplate anEmailForm(anEmailPostRequest.getURI(), emailSettings.getConfig());
+ConfigPageGetRequestHandler getEmailSettings("/config/email", "Email Notification Configuration", header, &anEmailForm);
 
 // Runloop Initialization
 SoilRunLoop soilRunLoop(&pump, dfSoil, arduinoMillis);
 RunLoopFileHandler aRunLoopPersistance(soilRunLoop);
 FileHandler *runLoopPersistance = &aRunLoopPersistance;
 RunLoopPostRequestHandler aRunLoopPostRequest("/config/runloop/submit", soilRunLoop, runLoopPersistance);
-PostRequestHandler *runLoopPostRequest = &aRunLoopPostRequest;
-RunLoopFormTemplate aRunLoopForm(runLoopPostRequest->getURI(), soilRunLoop);
-SettingsFormTemplate *runLoopForm = &aRunLoopForm;
-ConfigPageGetRequestHandler getRunLoopConfig("/config/runloop", "Run Loop Configuration", header, runLoopForm);
-GetRequestHandler *runLoopGetRequest = &getRunLoopConfig;
+RunLoopFormTemplate aRunLoopForm(aRunLoopPostRequest.getURI(), soilRunLoop);
+ConfigPageGetRequestHandler getRunLoopConfig("/config/runloop", "Run Loop Configuration", header, &aRunLoopForm);
 
 // Wifi Initialization
 WifiFileHandler wifiSettings;
 FileHandler *wifiPersistance = &wifiSettings;
 WifiController wifiController(D3, wifiSettings, arduinoMillis);
 WifiPostRequestHandler aWifiPostRequest("/config/wifi/submit", wifiSettings);
-PostRequestHandler *wifiPostRequest = &aWifiPostRequest;
-WifiFormTemplate aWifiFormTemplate(wifiPostRequest->getURI(), wifiSettings);
-SettingsFormTemplate *wifiForm = &aWifiFormTemplate;
-ConfigPageGetRequestHandler getWifiSettings("/config/wifi", "WiFi Configuration", header, wifiForm);
-GetRequestHandler *wifiGetRequest = &getWifiSettings;
+WifiFormTemplate aWifiFormTemplate(aWifiPostRequest.getURI(), wifiSettings);
+ConfigPageGetRequestHandler getWifiSettings("/config/wifi", "WiFi Configuration", header, &aWifiFormTemplate);
 
 // File Persistance Initialization
-const int numHandlers = 6;
-FileHandler *handlers[numHandlers] = {
+FileHandler *handlers[] = {
   lightPersistance, 
   pumpPersistance,
   soilPersistance,
@@ -160,7 +143,7 @@ FileHandler *handlers[numHandlers] = {
   wifiPersistance,
   emailPersistance
 };
-PersistanceContainer container(handlers, numHandlers);
+PersistanceContainer container(handlers, sizeof(handlers) / sizeof(FileHandler *));
 
 
 // Web Server Initialization
@@ -176,33 +159,36 @@ IndexDashboard indexDashboard(dashboards, numDashboards);
 
 IndexConnectedGetRequestHandler aGetIndexConnected(
   header, 
-  lightGetRequest->getURI(), 
-  pumpGetRequest->getURI(), 
-  soilGetRequest->getURI(),
-  runLoopGetRequest->getURI(),
-  emailGetRequest->getURI(),
+  getLightConfig.getURI(), 
+  getPumpConfig.getURI(), 
+  getSoilConfig.getURI(),
+  aRunLoopPostRequest.getURI(),
+  getEmailSettings.getURI(),
   indexDashboard);
-GetRequestHandler *getIndexConnected = &aGetIndexConnected;
 
 BCWebServer webServer(
   &engine, 
-  getIndexConnected, 
-  lightPostRequest, 
-  lightGetRequest, 
-  pumpPostRequest, 
-  pumpGetRequest, 
-  soilPostRequest, 
-  soilGetRequest,
-  runLoopPostRequest,
-  runLoopGetRequest,
-  wifiPostRequest,
-  wifiGetRequest,
-  wifiController,
-  emailPostRequest,
-  emailGetRequest);
+  aGetIndexConnected, 
+  aWifiPostRequest,
+  getWifiSettings,
+  wifiController);
+
+void contributeWebComponents() {
+  webServer.contributeGetRequest(getRunLoopConfig);
+  webServer.contributePostRequest(aRunLoopPostRequest, getRunLoopConfig.getURI());
+  webServer.contributeGetRequest(getSoilConfig);
+  webServer.contributePostRequest(aSoilPostRequest, getSoilConfig.getURI());
+  webServer.contributeGetRequest(getPumpConfig);
+  webServer.contributePostRequest(aPumpPostRequest, getPumpConfig.getURI());
+  webServer.contributeGetRequest(getLightConfig);
+  webServer.contributePostRequest(lightPostHandler, getLightConfig.getURI());
+  webServer.contributeGetRequest(getEmailSettings);
+  webServer.contributePostRequest(anEmailPostRequest, getEmailSettings.getURI());
+}
 
 void setup() {
   Serial.begin(115200);
+  contributeWebComponents();
   webServer.setupServer();
 }
 
