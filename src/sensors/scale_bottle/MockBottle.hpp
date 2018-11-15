@@ -6,10 +6,28 @@ namespace Sensors {
 
         class MockBottle : public Bottle {
             public:
-                virtual int getPercent() {
+                int getPercent() override {
                     return 75;
                 };
 
+                long getRaw() override {
+                    return 1000;
+                }
+                long getEmpty() override {
+                    return _empty;
+                }
+                void setEmpty(long empty) override {
+                    _empty = empty;
+                }
+                long getFull() override {
+                    return _full;
+                }
+                void setFull(long full) override {
+                    _full = full;
+                }
+            private:
+                long _empty = 50;
+                long _full = 5000;
         };
     }
 }

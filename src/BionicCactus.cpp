@@ -26,6 +26,7 @@
 #include "persistance/RunLoopFileHandler.hpp"
 #include "persistance/WifiFileHandler.hpp"
 #include "persistance/EmailFileHandler.hpp"
+#include "persistance/BottleFileHandler.hpp"
 
 #include "wifi/WifiController.hpp"
 
@@ -50,6 +51,8 @@
 #include "web/email/EmailFormTemplate.hpp"
 #include "web/email/EmailPostRequestHandler.hpp"
 #include "web/bottle/BottleDashboardTemplate.hpp"
+#include "web/bottle/BottleFormTemplate.hpp"
+#include "web/bottle/BottlePostRequestHandler.hpp"
 
 #include "email/EmailClient.hpp"
 #include "email/BottleEmailNotifier.hpp"
@@ -117,6 +120,10 @@ BottleEmailNotifier bottleEmail(arduinoMillis, bottle, emailSettings.getConfig()
 EmailPostRequestHandler anEmailPostRequest("/config/email/submit", emailSettings);
 EmailFormTemplate anEmailForm(anEmailPostRequest.getURI(), emailSettings.getConfig());
 ConfigPageGetRequestHandler getEmailSettings("/config/email", "Email Notification Configuration", header, &anEmailForm);
+BottleFileHandler bottlePersistance(bottle);
+BottlePostRequestHandler bottlePostRequest("/config/bottle/submit", bottlePersistance, bottle);
+BottleFormTemplate bottleFormTemplate(bottlePostRequest.getURI(), bottle);
+ConfigPageGetRequestHandler getBottleConfig("/config/bottle", "Bottle Level Sensor Configuration", header, &bottleFormTemplate);
 
 // Runloop Initialization
 SoilRunLoop soilRunLoop(&pump, dfSoil, arduinoMillis);
@@ -141,7 +148,8 @@ FileHandler *handlers[] = {
   soilPersistance,
   runLoopPersistance,
   wifiPersistance,
-  emailPersistance
+  emailPersistance,
+  &bottlePersistance
 };
 PersistanceContainer container(handlers, sizeof(handlers) / sizeof(FileHandler *));
 
@@ -163,6 +171,7 @@ IndexConnectedGetRequestHandler aGetIndexConnected(
   getSoilConfig.getURI(),
   aRunLoopPostRequest.getURI(),
   getEmailSettings.getURI(),
+  getBottleConfig.getURI(),
   indexDashboard);
 
 BCWebServer webServer(
@@ -183,6 +192,8 @@ void contributeWebComponents() {
   webServer.contributePostRequest(lightPostHandler, getLightConfig.getURI());
   webServer.contributeGetRequest(getEmailSettings);
   webServer.contributePostRequest(anEmailPostRequest, getEmailSettings.getURI());
+  webServer.contributeGetRequest(getBottleConfig);
+  webServer.contributePostRequest(bottlePostRequest, getBottleConfig.getURI());
 }
 
 void setup() {

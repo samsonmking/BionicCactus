@@ -4,8 +4,8 @@ using namespace Sensors::Bottle;
 
 ScaleBottle::ScaleBottle(int dout, int sck) :
 _scale(HX711(dout, sck)),
-_low{522450},
-_high{1182400},
+_empty{522450},
+_full{1182400},
 _m{0},
 _b{0} {
     calculateConstants();
@@ -26,7 +26,25 @@ int ScaleBottle::getPercent() {
     return result;
 }
 
+long ScaleBottle::getEmpty() {
+    return _empty;
+}
+
+void ScaleBottle::setEmpty(long empty) {
+    _empty = empty;
+    calculateConstants();
+}
+
+long ScaleBottle::getFull() {
+    return _full;
+}
+
+void ScaleBottle::setFull(long full) {
+    _full = full;
+    calculateConstants();
+}
+
 void ScaleBottle::calculateConstants() {
-  _m = 100.0 / (_high - _low);
-  _b = 100.0 - (_m * _high);
+  _m = 100.0 / (_full - _empty);
+  _b = 100.0 - (_m * _full);
 }

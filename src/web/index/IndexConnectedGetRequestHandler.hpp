@@ -16,6 +16,7 @@ namespace Web {
         const char *soilUri, 
         const char *runLoopUri, 
         const char *emailUri,
+        const char *bottleUri,
         IndexDashboard& dashboard);
         inline virtual const char *getURI() override {
                 return "/";
@@ -28,6 +29,7 @@ namespace Web {
         const char *_soilUri;
         const char *_runLoopUri;
         const char *_emailUri;
+        const char *_bottleUri;
         IndexDashboard& _dashboard;
     };
 
