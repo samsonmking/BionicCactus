@@ -7,6 +7,7 @@ namespace Sensors {
   class SoilSensor {
     public:
       virtual int getPercent() = 0;
+      virtual int getRaw() = 0;
       virtual void setHigh(int high) = 0;
       virtual int getHigh() = 0;
       virtual void setLow(int low) = 0;

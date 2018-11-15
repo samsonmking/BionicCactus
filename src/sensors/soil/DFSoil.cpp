@@ -31,13 +31,12 @@ int DFSoil::getPercent() {
   return _lastAverage;
 }
 
-int DFSoil::readRaw() {
-
+int DFSoil::getRaw() {
   return analogRead(_pin);
 }
 
 int DFSoil::readPercent() {
-  int raw = readRaw();
+  int raw = getRaw();
   return calculatePercent(raw);
 }
 

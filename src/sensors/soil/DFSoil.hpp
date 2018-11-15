@@ -15,6 +15,7 @@ namespace Sensors {
     public:
       DFSoil(int pin, Time::MillisProvider& millisProvider);
       int getPercent() override;
+      int getRaw() override;
       void setHigh(int high) override {
         _high = high;
         calculateConstants();
@@ -29,11 +30,10 @@ namespace Sensors {
       int getLow() override {
         return _low;
       }
-      int readRaw();
-      int readPercent();
       int calculatePercent(int raw);
       void loop() override;
     private:
+      int readPercent();
       void calculateConstants();
       int _pin;
       Time::Timer _timer;

@@ -14,9 +14,12 @@ namespace Sensors {
 
         };
         int percent;
-        virtual int getPercent() {
+        int getPercent() {
           return percent;
         };
+        int getRaw() override {
+            return 1234;
+        }
         void setHigh(int high) override {
             _high = high;
         }
