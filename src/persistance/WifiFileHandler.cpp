@@ -9,10 +9,8 @@ WifiFileHandler::WifiFileHandler() : _configured(false),
 }
 
 void WifiFileHandler::load() { 
-    Serial.println("opening file");
     auto file = SPIFFS.open(_filePath, "r"); 
     if (!file) {
-        Serial.println("file doesn't exist");
         _configured = false;
         return; 
     }

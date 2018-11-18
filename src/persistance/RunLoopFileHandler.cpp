@@ -16,6 +16,7 @@ void RunLoopFileHandler::save() {
     runLoopRoot[CONST_ML_PER_PERCENT] = _runLoop.getmlPerPercent();
     runLoopRoot[CONST_SET_POINT] = _runLoop.getSetPoint();
     runLoopRoot[CONST_TOLERANCE] = _runLoop.getTolerance();
+    runLoopRoot[CONST_ENABLE_RUNLOOP] = _runLoop.getEnabled();
     auto file = SPIFFS.open(_filePath, "w");
     runLoopRoot.printTo(file);
     file.close();
@@ -43,4 +44,5 @@ void RunLoopFileHandler::load() {
     _runLoop.setSetPoint(setPoint);
     int tolerance = settingsRoot[CONST_TOLERANCE];
     _runLoop.setTolerance(tolerance);
+    _runLoop.setEnabled(settingsRoot[CONST_ENABLE_RUNLOOP]);
 }

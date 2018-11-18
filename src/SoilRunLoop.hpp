@@ -10,10 +10,18 @@
 class SoilRunLoop {
 public:
   SoilRunLoop(Sensors::Pump::Pump* pump, Sensors::Soil::SoilSensor& sensor, Time::MillisProvider& millisProvider);
-  enum States { Dispersing, Pumping, CheckMoisture, Drying };
+  enum States { 
+      Dispersing, 
+      Pumping, 
+      CheckMoisture, 
+      Drying, 
+      Disabled 
+  };
   States getState() {
     return _state;
   }
+  void setEnabled(bool enabled);
+  bool getEnabled();
   void setSetPoint(int setPoint) {
     _setPoint = setPoint;
   };

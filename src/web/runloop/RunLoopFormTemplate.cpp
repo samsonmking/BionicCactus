@@ -11,6 +11,7 @@ int RunLoopFormTemplate::getForm(char *out, size_t len) {
     char *pos = out;
     char *end = out + len;
     const char *formOpening = R"(<Form action="%s" method="post">)";
+    const char *enable = R"(<p>Enable<br><input type="checkbox" name="%s" value="true" %s></p>)";
     const char *dispersionMin = R"(<p>Dispersion Time<br><input type = "text" name = "%s" value = "%i"> min</p>)";
     const char *hrsAtMoisture = R"(<p>Time At Moisture<br><input type = "text" name = "%s" value = "%i"> hrs</p>)";
     const char *hrsDry = R"(<p>Dry Time<br><input type = "text" name = "%s" value = "%i"> hrs</p>)";
@@ -21,8 +22,8 @@ int RunLoopFormTemplate::getForm(char *out, size_t len) {
     const char *formClosing = R"(<input type="submit" value="Submit"></Form>)";
     
     pos += snprintf(pos, end - pos, formOpening, _postUri);
+    pos += snprintf(pos, end - pos, enable, CONST_ENABLE_RUNLOOP, _runLoop.getEnabled() ? "checked" : "");
     pos += snprintf(pos, end - pos, dispersionMin, CONST_DISPERSION_MIN, _runLoop.getDispersionMin());
-    pos += snprintf(pos, end - pos, hrsAtMoisture, CONST_HRS_AT_MOISTURE, _runLoop.getHrsAtMoisture());
     pos += snprintf(pos, end - pos, hrsAtMoisture, CONST_HRS_AT_MOISTURE, _runLoop.getHrsAtMoisture());
     pos += snprintf(pos, end - pos, hrsDry, CONST_HRS_DRY, _runLoop.getHrsDry());
     pos += snprintf(pos, end - pos, maxDispense, CONST_MAX_DISPENSE, _runLoop.getMaxDispense());

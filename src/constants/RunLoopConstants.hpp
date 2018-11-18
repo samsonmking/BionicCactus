@@ -10,6 +10,7 @@ namespace Constants {
     static const char *CONST_HRS_AT_MOISTURE = "hrsAtMoisture";
     static const char *CONST_HRS_DRY = "hrsDry";
     static const char *CONST_DISPERSION_MIN = "dispersionMin";
+    static const char *CONST_ENABLE_RUNLOOP = "enable";
 }
 
 #endif

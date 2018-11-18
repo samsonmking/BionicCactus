@@ -18,7 +18,7 @@ class RunLoopFileHandler : public FileHandler {
         virtual void load() override;
     private:
         const char *_filePath = "/runloop.json";
-        static const size_t CONST_FILE_LENGTH = 400;
+        static const size_t CONST_FILE_LENGTH = 500;
         SoilRunLoop &_runLoop;    
 };
 

@@ -20,6 +20,18 @@ _timeAtDry{16} {
   enterDispersing();
 }
 
+void SoilRunLoop::setEnabled(bool enabled) {
+    if(!enabled) {
+        _state = Disabled;
+    } else if(enabled && _state == Disabled) {
+        enterDispersing();       
+    }
+}
+
+bool SoilRunLoop::getEnabled() {
+    return _state != Disabled;
+}
+
 void SoilRunLoop::loop() {
   switch (_state) {
     case CheckMoisture:
@@ -33,6 +45,8 @@ void SoilRunLoop::loop() {
       break;
     case Drying:
       drying();
+      break;
+    case Disabled:
       break;
   }
 }

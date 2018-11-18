@@ -8,6 +8,7 @@ _uri(uri), _runLoop(runLoop), _persistance(persistance) {
 }
 
 void RunLoopPostRequestHandler::setVals(PostParameter postParams[], int num) {
+    bool enabled = false;
     for (int i = 0; i < num; i++) {
         if(strcmp(postParams[i].key, CONST_DISPERSION_MIN) == 0) {
             int dispersionMin = atoi(postParams[i].value);
@@ -44,8 +45,13 @@ void RunLoopPostRequestHandler::setVals(PostParameter postParams[], int num) {
             _runLoop.setTolerance(tolerance);
             continue;
         }
+        else if(strcmp(postParams[i].key, CONST_ENABLE_RUNLOOP) == 0) {
+            enabled=true;
+            continue;
+        }
     }
 
+    _runLoop.setEnabled(enabled);
     _persistance->save();
 }
 

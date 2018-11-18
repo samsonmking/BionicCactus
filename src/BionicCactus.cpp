@@ -151,7 +151,6 @@ FileHandler *handlers[] = {
   emailPersistance,
   &bottlePersistance
 };
-PersistanceContainer container(handlers, sizeof(handlers) / sizeof(FileHandler *));
 
 
 // Web Server Initialization
@@ -169,7 +168,7 @@ IndexConnectedGetRequestHandler aGetIndexConnected(
   getLightConfig.getURI(), 
   getPumpConfig.getURI(), 
   getSoilConfig.getURI(),
-  aRunLoopPostRequest.getURI(),
+  getRunLoopConfig.getURI(),
   getEmailSettings.getURI(),
   getBottleConfig.getURI(),
   indexDashboard);
@@ -198,6 +197,7 @@ void contributeWebComponents() {
 
 void setup() {
   Serial.begin(115200);
+  PersistanceContainer container(handlers, sizeof(handlers) / sizeof(FileHandler *));
   contributeWebComponents();
   webServer.setupServer();
 }

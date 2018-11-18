@@ -193,6 +193,31 @@ void test_full_cycle() {
   TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
 }
 
+void test_disabled() {
+  MockMillisProvider mocktime(0);
+  MockPump pump;
+  MockSoilSensor sensor(50);
+  SoilRunLoop runLoop(&pump, sensor, mocktime);
+  int disperseMin = 5;
+  runLoop.setDispersionMin(disperseMin);
+  runLoop.setmlPerPercent(1);
+  runLoop.setSetPoint(80);
+  runLoop.setHrsAtMoisture(12);
+  runLoop.setHrsDry(12);
+  mocktime.setMillis(convertMillis(disperseMin + 1, Units::MINUTES));
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::CheckMoisture, runLoop.getState());
+  runLoop.setEnabled(false);
+  TEST_ASSERT_FALSE(runLoop.getEnabled());
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::Disabled, runLoop.getState());
+  runLoop.setEnabled(true);
+  TEST_ASSERT_TRUE(runLoop.getEnabled());
+  runLoop.loop();
+  TEST_ASSERT_EQUAL(SoilRunLoop::Dispersing, runLoop.getState());
+}
+
+
 // Email Tests
 void test_email_status_code() {
   const char* example_reply_with_code = "220 smtp.example.com ESMTP Postfix";
@@ -230,6 +255,7 @@ void setup() {
     // SoilRunLoop Tests
     RUN_TEST(test_pump_vol);
     RUN_TEST(test_full_cycle);
+    RUN_TEST(test_disabled);
 
     // Email Tests
     RUN_TEST(test_email_status_code);
