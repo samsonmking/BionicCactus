@@ -15,7 +15,9 @@ namespace Email {
 
     bool EmailClient::send(Message message) {
         WiFiClient client;
-        client.connect(_server, _port);
+        if(!client.connect(_server, _port)) {
+            return false;
+        }
         if(assertReplyNotCode(client, 220)) return false;
         client.println("EHLO bioniccactusclient");
         if(assertReplyNotCode(client, 250)) return false;
