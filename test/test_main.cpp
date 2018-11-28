@@ -124,6 +124,23 @@ void test_light_off_after_settime() {
   TEST_ASSERT_EQUAL(0, alight.getLastOutput());
 }
 
+void test_light_on_when_enabled_off_when_disabled() {
+  //10/25/2017 1:00:00 PM GMT
+  unix_time_t testTime = 1508936400;
+  MockTime mocktime(testTime);
+  Clock aclock(mocktime, 0);
+  LEDLight alight(aclock, D5);
+  alight.setTimeOn("09:00:00");
+  alight.setTimeOff("14:00:00");
+  alight.loop();
+  TEST_ASSERT_EQUAL(PWMRANGE, alight.getLastOutput());
+  alight.setEnabled(false);
+  TEST_ASSERT_EQUAL(0, alight.getLastOutput());
+  alight.setEnabled(true);
+  alight.loop();
+  TEST_ASSERT_EQUAL(PWMRANGE, alight.getLastOutput());
+}
+
 // DFSoil Tests
 void test_calculate_percent() {
   MockMillisProvider aMillis(0);
@@ -248,6 +265,7 @@ void setup() {
     RUN_TEST(test_light_on_after_settime);
     RUN_TEST(test_light_on_after_settime_half_bright);
     RUN_TEST(test_light_off_after_settime);
+    RUN_TEST(test_light_on_when_enabled_off_when_disabled);
 
     // DFSoil Tests
     RUN_TEST(test_calculate_percent);

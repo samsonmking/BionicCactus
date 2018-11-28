@@ -13,22 +13,25 @@ namespace Sensors {
     class LEDLight : public Light {
     public:
       LEDLight(Clock& clock, int lightPin);
-      virtual void setTimeOn(const char* timeOn) override;
-      virtual const char* getTimeOn() override;
-      virtual void setTimeOff(const char* timeOff) override;
-      virtual const char* getTimeOff() override;
+      void setEnabled(bool enabled) override;
+      bool getEnabled() override;
+      void setTimeOn(const char* timeOn) override;
+      const char* getTimeOn() override;
+      void setTimeOff(const char* timeOff) override;
+      const char* getTimeOff() override;
       inline void setBrightness(int brightness) {
         _brightness = brightness;
       };
-      virtual int getBrightness() override;
-      virtual void loop() override;
-      virtual bool isOn() {
+      int getBrightness() override;
+      void loop() override;
+      bool isOn() {
         return _lastOutput > 0;
       };
       int getLastOutput() {
         return _lastOutput;
       };
     private:
+      bool _enabled;
       int _lightPin;
       int _brightness;
       int _lastOutput = 0;

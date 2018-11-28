@@ -3,9 +3,11 @@
 
 #include "web/SettingsFormTemplate.hpp"
 #include "sensors/light/Light.hpp"
+#include "constants/LightConstants.hpp"
 #include <Arduino.h>
 
 using namespace Sensors::Light;
+using namespace Constants;
 
 namespace Web {
 

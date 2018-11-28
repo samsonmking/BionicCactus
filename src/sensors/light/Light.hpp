@@ -6,6 +6,8 @@ namespace Sensors {
 
     class Light {
       public:
+        virtual void setEnabled(bool enabled) = 0;
+        virtual bool getEnabled() = 0;
         virtual void setTimeOn(const char *timeOn) = 0;
         virtual const char *getTimeOn() = 0;
         virtual void setTimeOff(const char *timeOff) = 0;

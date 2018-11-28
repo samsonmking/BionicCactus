@@ -12,6 +12,7 @@ const char *LightPostRequestHandler::getURI() {
 }
 
 void LightPostRequestHandler::setVals(PostParameter params[], int numParams) {
+    bool enabled = false;
     for(int i = 0; i < numParams; i++) {
         if (strcmp(params[i].key, CONST_BRIGHTNESS) == 0) {
             int brightness = atoi(params[i].value);
@@ -26,6 +27,11 @@ void LightPostRequestHandler::setVals(PostParameter params[], int numParams) {
             _light->setTimeOff(params[i].value);
             continue;
         }
+        else if (strcmp(params[i].key, CONST_LIGHT_ENABLE) == 0) {
+            enabled = true;
+            continue;
+        }
     }
+    _light->setEnabled(enabled);
     _persistance->save();
 }
