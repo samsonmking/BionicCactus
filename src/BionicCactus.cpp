@@ -171,6 +171,7 @@ IndexConnectedGetRequestHandler aGetIndexConnected(
   getRunLoopConfig.getURI(),
   getEmailSettings.getURI(),
   getBottleConfig.getURI(),
+  getWifiSettings.getURI(),
   indexDashboard);
 
 BCWebServer webServer(
