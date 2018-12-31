@@ -35,7 +35,7 @@ void IndexConnectedGetRequestHandler::getHTML(char *out, size_t len) {
     pos += snprintf(pos, end - pos, R"(<h2>Preferences</h2><ul>)");
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Watering System</a></li>)", _runLoopUri);
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Light</a></li>)", _lightUri);
-    pos += snprintf(pos, end - pos, R"(<li><a href="%s">Email Notifications</a></li></ul>)", _wifiUri);
+    pos += snprintf(pos, end - pos, R"(<li><a href="%s">Email Notifications</a></li></ul>)", _emailUri);
     pos += snprintf(pos, end - pos, R"(<h2>Calibration</h2><ul>)");
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Pump Setup</a></li>)", _pumpUri);
     pos += snprintf(pos, end - pos, R"(<li><a href="%s">Soil Moisture Sensor</a></li>)", _soilUri);
