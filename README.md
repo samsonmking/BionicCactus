@@ -1,6 +1,7 @@
 # BionicCactus
 Autonomous lighting and watering for house plants that's configurable through a simple web interface. Written in C++ for ESP8266 microcontroller using the Arduino framework and PlatformIO. Features include:
 * Set desired soil moisture levels and watering frequency
+  * Drive up to 3A / 12V pump motor
 * Set lighting schedule and drive up to 4A / 12V DC lights
   * Configurable brightness with PWM control
 * Monitor water resevoir levels and recieve email notifications when it's time to refill
