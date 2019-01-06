@@ -23,7 +23,7 @@ namespace Web {
                             </div>
 			            </div>		
 		            </div>
-		            <div style="font-weight: normal;"> %d%%% (actual) / %d%% (set) </div>
+		            <div style="font-weight: normal;"> %d%% (actual) / %d%% (set) </div>
 	            </div>)";
 
         const int padding = 7;
