@@ -105,7 +105,7 @@ FileHandler *soilPersistance = &aSoilPersistance;
 DFSoilPostRequestHandler aSoilPostRequest("/config/soil/submit", dfSoil, soilPersistance);
 DFSoilFormTemplate aSoilFormTemplate(aSoilPostRequest.getURI(), dfSoil);
 ConfigPageGetRequestHandler getSoilConfig("/config/soil", "Soil Configuration", header, &aSoilFormTemplate);
-SoilDashboardTemplate soilDashboard(dfSoil);
+  
   
 // Bottle Initialization
 #if SIMULATED
@@ -113,7 +113,7 @@ SoilDashboardTemplate soilDashboard(dfSoil);
 #else
   Sensors::Bottle::ScaleBottle bottle(D2, D1);
 #endif
-BottleDashboardTemplate bottleDashboard(bottle);
+
 EmailFileHandler emailSettings;
 FileHandler *emailPersistance = &emailSettings;
 BottleEmailNotifier bottleEmail(arduinoMillis, bottle, emailSettings.getConfig());
@@ -152,15 +152,17 @@ FileHandler *handlers[] = {
   &bottlePersistance
 };
 
-
-// Web Server Initialization
-ESP8266WebServer engine(80);
-
+// Dashboard Initialization
+BottleDashboardTemplate bottleDashboard(bottle);
+SoilDashboardTemplate soilDashboard(dfSoil, soilRunLoop);
 ValuesDashboardTemplate *dashboards[] = {
    &soilDashboard,
    &bottleDashboard
 };
  
+// Web Server Initialization
+ESP8266WebServer engine(80);
+
 IndexDashboard indexDashboard(dashboards, sizeof(dashboards) / sizeof(ValuesDashboardTemplate *));
 
 IndexConnectedGetRequestHandler aGetIndexConnected(

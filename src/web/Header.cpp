@@ -17,6 +17,20 @@ int Header::getHeader(char *out, size_t len) {
 		a {
 			text-decoration: none;
 		}
+		.progressLabel {
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+		.progressOuter {
+			width: 200px;
+			background-color: lightgray;
+		}
+		.progressInner {
+			height: 30px;
+			text-align: center;
+			line-height: 30px;
+			color: white;
+		}
 		</style>
     </head>
 	<body>

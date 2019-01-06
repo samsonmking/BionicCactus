@@ -13,13 +13,17 @@ namespace Web {
         char* pos = out;
         char* end = out + len;
 
-        const char* tableOpening = R"(<table><tr>)";
-        const char* moisture = R"(<td width="200">Bottle Level</td><td>%d percent</td>)";
-        const char* tableClosing = R"(</tr></table>)";
+        const char* progressBar = R"(
+            <div class="progressLabel">
+                Water Bottle Level
+                <div class="progressOuter">
+                    <div class="progressInner" style="width: %d%%; background-color: %s;">%d %%</div>
+                </div>
+            </div>)";
 
-        pos += snprintf(pos, end - pos, tableOpening);
-        pos += snprintf(pos, end - pos, moisture, _bottle.getPercent());
-        pos += snprintf(pos, end - pos, tableClosing);
+        int percent = _bottle.getPercent();
+        const char* color = (percent < 30) ? "red" : "blue";
+        pos += snprintf(pos, end - pos, progressBar, percent, color, percent);
 
         return pos - out;
     }

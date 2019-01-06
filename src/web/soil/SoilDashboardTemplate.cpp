@@ -4,8 +4,9 @@ using namespace Sensors::Soil;
 
 namespace Web {
 
-    SoilDashboardTemplate::SoilDashboardTemplate(SoilSensor& sensor) :
-    _sensor(sensor) {
+    SoilDashboardTemplate::SoilDashboardTemplate(SoilSensor& sensor, SoilRunLoop& runLoop) :
+    _sensor(sensor),
+    _runLoop(runLoop) {
 
     }
 
@@ -13,13 +14,21 @@ namespace Web {
         char* pos = out;
         char* end = out + len; 
 
-        const char* tableOpening = R"(<table><tr>)";
-        const char* moisture = R"(<td width="200">Moisture Reading</td><td>%d percent</td>)";
-        const char* tableClosing = R"(</tr></table>)";
+        const char* progressBar = R"(
+            	<div class="progressLabel">Moisture Level
+		            <div class="progressOuter" style="background-color: blue; position: relative;">	
+			            <div class="progressInner" style="width: 160px; background-color: green;">
+                            <div class="progressInner" style="width: 40px; background-color: red;">
+                                <div style="position: absolute; width: %d%%; height: 30px; border-right: 4px solid black;"></div>
+                            </div>
+			            </div>		
+		            </div>
+		            <div style="font-weight: normal;"> %d%%% (actual) / %d%% (set) </div>
+	            </div>)";
 
-        pos += snprintf(pos, end - pos, tableOpening);
-        pos += snprintf(pos, end - pos, moisture, _sensor.getPercent());
-        pos += snprintf(pos, end - pos, tableClosing);
+        const int padding = 7;
+        int percent = _sensor.getPercent();
+        pos += snprintf(pos, end - pos, progressBar, percent, percent, _runLoop.getSetPoint());
 
         return pos - out;
     }
