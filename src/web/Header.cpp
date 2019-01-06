@@ -24,6 +24,7 @@ int Header::getHeader(char *out, size_t len) {
 		.progressOuter {
 			width: 200px;
 			background-color: lightgray;
+                        border: 2px solid darkslategrey;
 		}
 		.progressInner {
 			height: 30px;
