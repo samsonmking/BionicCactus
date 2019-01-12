@@ -1,13 +1,10 @@
 # BionicCactus
-Autonomous lighting and watering for house plants that's configurable through a simple web interface. Written in C++ for ESP8266 microcontroller using the Arduino framework and PlatformIO. Features include:
+Robotic lighting and watering for house plants that's configurable through a simple web interface. Written in C++ for ESP8266 microcontroller using the Arduino framework and PlatformIO. Features include:
 * Set desired soil moisture levels and watering frequency
-  * Drive up to 3A / 12V pump motor
-* Set lighting schedule and drive up to 4A / 12V DC lights
-  * Configurable brightness with PWM control
+* Set lighting schedule and control brightness
 * Monitor water resevoir levels and recieve email notifications when it's time to refill
 * Simple setup and monitoring through web interface
-
-Most parts are 3D printed or simple off the shelf components. Clone the [KiCAD PCB Repository](https://github.com/samsonmking/BionicCactusPCB) to make the PCB.
+* Persist settings to flash memory
 
 ![Image of system](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/system.jpg)
 
@@ -18,7 +15,13 @@ Most parts are 3D printed or simple off the shelf components. Clone the [KiCAD P
 ![Watering System Configuration](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/bc_watering.png)
 
 ## Hardware
-### 3D Printed pot with integrated water dispersion and soil moisture sensor housing
-![Pot Design](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/pot_back.jpg)
+### PCB and Schematics
+Clone the [KiCAD PCB Repository](https://github.com/samsonmking/BionicCactusPCB) for PCB and circuit schematics.
 
-*I'm in the the process of writing up full setup documentation and uploading the STLs to print the pot, light, tray, and PCB enclosure.*
+### 3D Printed Components
+* [Robotic Gardening Planter Pot](https://www.thingiverse.com/thing:3351677)
+* [Light with Drip Tray](https://www.thingiverse.com/thing:3351565)
+* [Enclosure and Pump Bracket]()
+
+![Pot Design](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/pot_back.jpg)
+![Water Flowing](https://github.com/samsonmking/BionicCactus/raw/master/images/water.gif)
