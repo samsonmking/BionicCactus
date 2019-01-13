@@ -13,6 +13,21 @@ Robotic lighting and watering for house plants that's configurable through a sim
 ![Software Index Page](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/bc_index.png)
 ### Watering System Configuration
 ![Watering System Configuration](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/bc_watering.png)
+### Installation
+1. Install [PlatformIO](https://docs.platformio.org/en/latest/installation.html)
+2. Build and Upload
+```bash
+platformio run --target upload
+```
+To run in simulation mode with only the ESP8266 (no PCB connected) change BionicCactus.cpp : Line 3
+```c++
+#define SIMULATED false
+```
+to
+```c++
+#define SIMULATED true
+```
+
 
 ## Hardware
 ### PCB and Schematics
