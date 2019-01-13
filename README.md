@@ -21,7 +21,7 @@ Clone the [KiCAD PCB Repository](https://github.com/samsonmking/BionicCactusPCB)
 ### 3D Printed Components
 * [Robotic Gardening Planter Pot](https://www.thingiverse.com/thing:3351677)
 * [Light with Drip Tray](https://www.thingiverse.com/thing:3351565)
-* [Enclosure and Pump Bracket]()
+* [Enclosure and Pump Bracket](https://www.thingiverse.com/thing:3351861)
 
 ![Pot Design](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/pot_back.jpg)
 ![Water Flowing](https://github.com/samsonmking/BionicCactus/raw/master/images/water.gif)
