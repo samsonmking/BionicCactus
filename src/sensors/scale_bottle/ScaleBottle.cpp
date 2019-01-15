@@ -3,12 +3,18 @@
 using namespace Sensors::Bottle;
 
 ScaleBottle::ScaleBottle(int dout, int sck) :
-_scale(HX711(dout, sck)),
+_scale(HX711()),
 _empty{522450},
 _full{1182400},
 _m{0},
-_b{0} {
+_b{0},
+_dout{dout},
+_sck{sck} {
     calculateConstants();
+}
+
+void ScaleBottle::init() {
+    _scale.begin(_dout, _sck);
 }
 
 long ScaleBottle::getRaw() {

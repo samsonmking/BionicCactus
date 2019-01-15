@@ -1,8 +1,7 @@
 #ifndef UNIT_TEST
 
-#define SIMULATED false
-
 #include <Arduino.h>
+#include "Settings.hpp"
 
 #include "time/Clock.hpp"
 #include "time/MockTimeProvider.hpp"
@@ -199,6 +198,7 @@ void contributeWebComponents() {
 }
 
 void setup() {
+  bottle.init();
   Serial.begin(115200);
   PersistanceContainer container(handlers, sizeof(handlers) / sizeof(FileHandler *));
   contributeWebComponents();

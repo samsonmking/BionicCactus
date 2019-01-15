@@ -6,6 +6,7 @@ namespace Sensors {
 
         class Bottle {
             public:
+                virtual void init() = 0;
                 virtual long getRaw() = 0;;
                 virtual int getPercent() = 0;
                 virtual long getEmpty() = 0;

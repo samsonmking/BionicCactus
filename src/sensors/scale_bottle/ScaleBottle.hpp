@@ -10,6 +10,7 @@ namespace Sensors {
         class ScaleBottle : public Bottle {
             public:
                 ScaleBottle(int dout, int sck);
+                void init() override;
                 long getRaw() override;
                 int getPercent() override;
                 long getEmpty() override;
@@ -22,6 +23,8 @@ namespace Sensors {
                 long _full;
                 double _m;
                 double _b;
+                int _dout;
+                int _sck;
                 void calculateConstants();
         };
 

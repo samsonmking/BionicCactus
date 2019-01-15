@@ -6,6 +6,9 @@ namespace Sensors {
 
         class MockBottle : public Bottle {
             public:
+                void init() override {
+                    // Dummy init
+                }
                 int getPercent() override {
                     return 75;
                 };
