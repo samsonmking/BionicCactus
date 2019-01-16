@@ -27,6 +27,7 @@ to
 ```c++
 #define SIMULATED true
 ```
+3. See [wiki](https://github.com/samsonmking/BionicCactus/wiki) for setup and configuration
 
 
 ## Hardware
