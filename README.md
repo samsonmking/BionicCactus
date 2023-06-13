@@ -6,13 +6,13 @@ Robotic lighting and watering for house plants that's configurable through a sim
 * Simple setup and monitoring through web interface
 * Persist settings to flash memory
 
-![Image of system](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/system.jpg)
+![Image of system](https://github.com/samsonmking/BionicCactus/raw/main/images/system.jpg)
 
 ## Software
 ### Overview
-![Software Index Page](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/bc_index.png)
+![Software Index Page](https://github.com/samsonmking/BionicCactus/raw/main/images/bc_index.png)
 ### Watering System Configuration
-![Watering System Configuration](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/bc_watering.png)
+![Watering System Configuration](https://github.com/samsonmking/BionicCactus/raw/main/images/bc_watering.png)
 ### Installation
 1. Install [PlatformIO](https://docs.platformio.org/en/latest/installation.html)
 2. Build and Upload
@@ -39,5 +39,5 @@ Clone the [KiCAD PCB Repository](https://github.com/samsonmking/BionicCactusPCB)
 * [Light with Drip Tray](https://www.thingiverse.com/thing:3351565)
 * [Enclosure and Pump Bracket](https://www.thingiverse.com/thing:3351861)
 
-![Pot Design](https://github.com/samsonmking/BionicCactusESP8266/raw/master/images/pot_back.jpg)
-![Water Flowing](https://github.com/samsonmking/BionicCactus/raw/master/images/water.gif)
+![Pot Design](https://github.com/samsonmking/BionicCactus/raw/main/images/pot_back.jpg)
+![Water Flowing](https://github.com/samsonmking/BionicCactus/raw/main/images/water.gif)
